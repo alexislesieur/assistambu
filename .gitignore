@@ -24,3 +24,4 @@ Api/bootstrap/cache/*.php
 
 # Claude
 .claude/
+.deploy.env

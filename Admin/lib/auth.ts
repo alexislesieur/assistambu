@@ -1,5 +1,4 @@
-const TOKEN_KEY = "assistambu_token";
-const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL!;
+const TOKEN_KEY = "admin_token";
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -19,8 +18,9 @@ export function isAuthenticated(): boolean {
 }
 
 export function redirectToAuth(): void {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
-  window.location.href = `${AUTH_URL}/login?redirect=${appUrl}`;
+  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3002";
+  const authUrl = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3001";
+  window.location.href = `${authUrl}/login?redirect=${adminUrl}`;
 }
 
 export function logout(): void {

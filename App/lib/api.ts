@@ -26,7 +26,7 @@ async function request<T>(
   if (res.status === 401) {
     localStorage.removeItem("assistambu_token");
     const authUrl = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3001";
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     window.location.href = `${authUrl}/login?redirect=${appUrl}`;
     throw new Error("Non authentifié");
   }
