@@ -36,8 +36,6 @@ class GardeController extends Controller
             'heure_debut' => 'required|date_format:H:i',
             'heure_fin'   => 'required|date_format:H:i',
             'type'        => 'required|in:jour,nuit,garde_24h,astreinte',
-            'vehicule'    => 'nullable|string|max:20',
-            'service'     => 'nullable|string|max:100',
             'binome'      => 'nullable|string|max:100',
         ]);
 
@@ -66,8 +64,6 @@ class GardeController extends Controller
             'heure_debut' => 'sometimes|date_format:H:i',
             'heure_fin'   => 'sometimes|date_format:H:i',
             'type'        => 'sometimes|in:jour,nuit,garde_24h,astreinte',
-            'vehicule'    => 'nullable|string|max:20',
-            'service'     => 'nullable|string|max:100',
             'binome'      => 'nullable|string|max:100',
         ]);
 

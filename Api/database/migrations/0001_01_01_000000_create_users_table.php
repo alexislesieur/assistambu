@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('password');
 
             $table->enum('statut', ['ade', 'aux', 'etudiant'])->default('aux');
-            $table->string('vehicule', 20)->nullable();
-            $table->string('service', 100)->nullable();
 
             $table->boolean('is_premium')->default(false);
             $table->timestamp('premium_expires_at')->nullable();

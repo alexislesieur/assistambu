@@ -30,8 +30,6 @@ class DatabaseSeeder extends Seeder
             'last_name'  => 'Ambulancier',
             'password'   => Hash::make('password'),
             'statut'     => 'ade',
-            'vehicule'   => 'AMB-142',
-            'service'    => 'SMUR 59',
         ]);
 
         // ── Sac par défaut ─────────────────────────────────────

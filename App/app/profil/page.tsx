@@ -21,8 +21,6 @@ export default function ProfilPage() {
     last_name: "",
     email: "",
     statut: "",
-    vehicule: "",
-    service: "",
   });
   const [profileInitialized, setProfileInitialized] = useState(false);
 
@@ -52,8 +50,6 @@ export default function ProfilPage() {
       last_name: user.last_name,
       email: user.email,
       statut: user.statut,
-      vehicule: user.vehicule ?? "",
-      service: user.service ?? "",
     });
     setProfileInitialized(true);
   }
@@ -87,8 +83,6 @@ export default function ProfilPage() {
         last_name: profileForm.last_name,
         email: profileForm.email,
         statut: profileForm.statut,
-        vehicule: profileForm.vehicule || null,
-        service: profileForm.service || null,
       });
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 3000);
@@ -174,24 +168,6 @@ export default function ProfilPage() {
           </div>
         </div>
 
-        {/* Infos supplémentaires */}
-        {(user?.vehicule || user?.service) && (
-          <div className="bg-white rounded-xl border border-[#D1D8E0] divide-y divide-[#D1D8E0]">
-            {user.vehicule && (
-              <div className="flex items-center justify-between px-4 py-3">
-                <span className="text-[#8694A7] text-sm">Véhicule</span>
-                <span className="text-[#1C1F26] text-sm font-semibold font-mono">{user.vehicule}</span>
-              </div>
-            )}
-            {user.service && (
-              <div className="flex items-center justify-between px-4 py-3">
-                <span className="text-[#8694A7] text-sm">Service</span>
-                <span className="text-[#1C1F26] text-sm font-semibold">{user.service}</span>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Édition profil */}
         <div className="bg-white rounded-xl border border-[#D1D8E0] overflow-hidden">
           <div className="px-4 py-3 border-b border-[#D1D8E0]">
@@ -242,29 +218,6 @@ export default function ProfilPage() {
                 <option value="aux">Ambulancier DEA</option>
                 <option value="etudiant">Étudiant</option>
               </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-[#8694A7] font-semibold block mb-1">Véhicule</label>
-                <input
-                  type="text"
-                  value={profileForm.vehicule}
-                  onChange={(e) => setProfileForm({ ...profileForm, vehicule: e.target.value })}
-                  placeholder="Ex: VSAV-01"
-                  className="w-full border border-[#D1D8E0] rounded-lg px-3 py-2 text-sm text-[#1C1F26] bg-[#F8F9FA] focus:outline-none focus:border-[#2E86C1] placeholder:text-[#C5CDD8]"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[#8694A7] font-semibold block mb-1">Service</label>
-                <input
-                  type="text"
-                  value={profileForm.service}
-                  onChange={(e) => setProfileForm({ ...profileForm, service: e.target.value })}
-                  placeholder="Ex: SAMU 75"
-                  className="w-full border border-[#D1D8E0] rounded-lg px-3 py-2 text-sm text-[#1C1F26] bg-[#F8F9FA] focus:outline-none focus:border-[#2E86C1] placeholder:text-[#C5CDD8]"
-                />
-              </div>
             </div>
 
             {profileError && (

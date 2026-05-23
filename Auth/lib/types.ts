@@ -4,8 +4,6 @@ export interface User {
   last_name: string;
   email: string;
   statut: "ade" | "aux" | "etudiant";
-  vehicule: string | null;
-  service: string | null;
   is_premium: boolean;
   is_admin: boolean;
   last_login_at: string | null;

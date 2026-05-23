@@ -17,8 +17,6 @@ class Garde extends Model
         'heure_fin',
         'duree_minutes',
         'type',
-        'vehicule',
-        'service',
         'binome',
         'is_cloturee',
         'cloturee_at',

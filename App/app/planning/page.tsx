@@ -183,11 +183,9 @@ export default function PlanningPage() {
                         )}
                       </div>
 
-                      {(garde.vehicule || garde.service || garde.binome) && (
+                      {garde.binome && (
                         <div className="flex gap-3 mt-1 text-[#8694A7] text-xs flex-wrap">
-                          {garde.vehicule && <span>{garde.vehicule}</span>}
-                          {garde.service && <span>{garde.service}</span>}
-                          {garde.binome && <span>Binôme: {garde.binome}</span>}
+                          <span>Binôme: {garde.binome}</span>
                         </div>
                       )}
                     </div>

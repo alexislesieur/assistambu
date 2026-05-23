@@ -19,8 +19,6 @@ class User extends Authenticatable
         'email',
         'password',
         'statut',
-        'vehicule',
-        'service',
         'is_premium',
         'premium_expires_at',
         'is_admin',

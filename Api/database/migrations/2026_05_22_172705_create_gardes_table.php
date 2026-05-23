@@ -19,8 +19,6 @@ return new class extends Migration
 
             $table->enum('type', ['jour', 'nuit', 'garde_24h', 'astreinte'])->default('jour');
 
-            $table->string('vehicule', 20)->nullable();
-            $table->string('service', 100)->nullable();
             $table->string('binome')->nullable();
 
             $table->boolean('is_cloturee')->default(false);

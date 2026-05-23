@@ -44,7 +44,7 @@ export default function MobileHeader({ title, user, showBack, onBack }: Props) {
           <div className="text-right">
             <div className="text-white text-sm font-semibold">{user.first_name}</div>
             <div className="text-[#5DADE2] text-xs font-mono">
-              {user.vehicule ?? user.service ?? user.statut.toUpperCase()}
+              {user.statut.toUpperCase()}
             </div>
           </div>
         )}
