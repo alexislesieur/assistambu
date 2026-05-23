@@ -143,26 +143,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div>
-          <h3 className="text-[#0A1E3D] font-bold text-sm uppercase tracking-wide mb-3">
-            Actions rapides
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => window.location.href = "/interventions/nouvelle"}
-              className="bg-[#2E86C1] text-white rounded-xl p-4 text-center font-semibold text-sm"
-            >
-              + Intervention
-            </button>
-            <button
-              onClick={() => window.location.href = "/sac"}
-              className="bg-white border border-[#D1D8E0] text-[#0A1E3D] rounded-xl p-4 text-center font-semibold text-sm"
-            >
-              Vérifier le sac
-            </button>
-          </div>
-        </div>
-
       </div>
 
       <BottomNav />
