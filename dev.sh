@@ -39,12 +39,19 @@ cd "$ROOT/App"
 npm run dev -- -p 3000 > "$ROOT/.logs/app.log" 2>&1 &
 PIDS+=($!)
 
+# Admin — port 3002
+echo "▶ Admin       → http://localhost:3002"
+cd "$ROOT/Admin"
+npm run dev -- -p 3002 > "$ROOT/.logs/admin.log" 2>&1 &
+PIDS+=($!)
+
 echo ""
 echo "Tous les services démarrés. Ctrl+C pour tout arrêter."
-echo "Logs : .logs/{api,auth,app}.log"
+echo "Logs : .logs/{api,auth,app,admin}.log"
 echo ""
 echo "  API    http://localhost:8000"
 echo "  Auth   http://localhost:3001"
 echo "  App    http://localhost:3000"
+echo "  Admin  http://localhost:3002"
 
 wait
