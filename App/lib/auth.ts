@@ -19,7 +19,8 @@ export function isAuthenticated(): boolean {
 }
 
 export function redirectToAuth(): void {
-  window.location.href = `${AUTH_URL}/login?redirect=${window.location.href}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  window.location.href = `${AUTH_URL}/login?redirect=${appUrl}`;
 }
 
 export function logout(): void {
