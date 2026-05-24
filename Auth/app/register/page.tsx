@@ -12,7 +12,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     password_confirmation: "",
-    statut: "aux",
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -95,22 +94,6 @@ export default function RegisterPage() {
                 className="w-full bg-[#141A26] border border-[#1C2433] rounded-lg px-3 py-3 text-white placeholder-[#4A5568] focus:outline-none focus:border-[#2E86C1] transition-colors"
               />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-[#8694A7] mb-2">
-              Statut professionnel
-            </label>
-            <select
-              name="statut"
-              value={form.statut}
-              onChange={handleChange}
-              className="w-full bg-[#141A26] border border-[#1C2433] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2E86C1] transition-colors"
-            >
-              <option value="ade">Ambulancier Diplômé d&apos;État</option>
-              <option value="aux">Auxiliaire Ambulancier</option>
-              <option value="etudiant">Étudiant en formation</option>
-            </select>
           </div>
 
           <div>

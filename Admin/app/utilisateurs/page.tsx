@@ -6,12 +6,6 @@ import { api, download } from "@/lib/api";
 import AdminLayout from "@/components/AdminLayout";
 import type { AdminUser, PaginatedResponse } from "@/lib/types";
 
-const STATUTS: Record<string, string> = {
-  ade: "ADE",
-  aux: "Auxiliaire",
-  etudiant: "Étudiant",
-};
-
 function fmt(date: string | null) {
   if (!date) return "—";
   return new Date(date).toLocaleDateString("fr-FR");
@@ -25,7 +19,6 @@ export default function UtilisateursPage() {
   const [actionLoading, setActionLoading] = useState<number | null>(null);
 
   const [search, setSearch] = useState("");
-  const [statut, setStatut] = useState("");
   const [locked, setLocked] = useState(false);
   const [premium, setPremium] = useState(false);
   const [page, setPage] = useState(1);
@@ -34,7 +27,6 @@ export default function UtilisateursPage() {
     setFetching(true);
     const params = new URLSearchParams();
     if (search) params.set("search", search);
-    if (statut) params.set("statut", statut);
     if (locked) params.set("locked", "1");
     if (premium) params.set("premium", "1");
     params.set("page", String(page));
@@ -46,7 +38,7 @@ export default function UtilisateursPage() {
     } finally {
       setFetching(false);
     }
-  }, [search, statut, locked, premium, page]);
+  }, [search, locked, premium, page]);
 
   useEffect(() => {
     if (!user) return;
@@ -160,19 +152,6 @@ export default function UtilisateursPage() {
                 className="w-full border border-[#D1D8E0] rounded-md px-3 py-2 text-sm text-[#0A1E3D] focus:outline-none focus:border-[#2E86C1]"
               />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#8694A7] mb-1">Statut</label>
-              <select
-                value={statut}
-                onChange={(e) => setStatut(e.target.value)}
-                className="border border-[#D1D8E0] rounded-md px-3 py-2 text-sm text-[#0A1E3D] focus:outline-none focus:border-[#2E86C1]"
-              >
-                <option value="">Tous</option>
-                <option value="ade">ADE</option>
-                <option value="aux">Auxiliaire</option>
-                <option value="etudiant">Étudiant</option>
-              </select>
-            </div>
             <label className="flex items-center gap-2 text-sm text-[#1C1F26] cursor-pointer pb-2">
               <input
                 type="checkbox"
@@ -211,7 +190,6 @@ export default function UtilisateursPage() {
                 <thead className="bg-[#F0F2F5] border-b border-[#D1D8E0]">
                   <tr>
                     <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Utilisateur</th>
-                    <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Statut</th>
                     <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Premium</th>
                     <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">État</th>
                     <th className="text-right text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Interv.</th>
@@ -223,7 +201,7 @@ export default function UtilisateursPage() {
                 <tbody className="divide-y divide-[#F0F2F5]">
                   {result.data.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="text-center text-[#8694A7] py-8">
+                      <td colSpan={7} className="text-center text-[#8694A7] py-8">
                         Aucun utilisateur
                       </td>
                     </tr>
@@ -241,9 +219,6 @@ export default function UtilisateursPage() {
                             {u.first_name} {u.last_name}
                           </div>
                           <div className="text-[#8694A7] text-xs">{u.email}</div>
-                        </td>
-                        <td className="px-4 py-3 text-[#1C1F26]">
-                          {STATUTS[u.statut] ?? u.statut}
                         </td>
                         <td className="px-4 py-3">
                           {u.is_premium ? (

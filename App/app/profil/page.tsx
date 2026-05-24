@@ -7,12 +7,6 @@ import { logout } from "@/lib/auth";
 import MobileHeader from "@/components/MobileHeader";
 import BottomNav from "@/components/BottomNav";
 
-const STATUT_LABELS: Record<string, string> = {
-  ade: "ADE",
-  aux: "Ambulancier DEA",
-  etudiant: "Étudiant",
-};
-
 export default function ProfilPage() {
   const { user, loading } = useAuth();
 
@@ -20,7 +14,6 @@ export default function ProfilPage() {
     first_name: "",
     last_name: "",
     email: "",
-    statut: "",
   });
   const [profileInitialized, setProfileInitialized] = useState(false);
 
@@ -49,7 +42,6 @@ export default function ProfilPage() {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      statut: user.statut,
     });
     setProfileInitialized(true);
   }
@@ -82,7 +74,6 @@ export default function ProfilPage() {
         first_name: profileForm.first_name,
         last_name: profileForm.last_name,
         email: profileForm.email,
-        statut: profileForm.statut,
       });
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 3000);
@@ -155,9 +146,6 @@ export default function ProfilPage() {
             </div>
             <div className="text-[#8694A7] text-xs truncate">{user?.email}</div>
             <div className="flex items-center gap-2 mt-2">
-              <span className="bg-[#2E86C1]/20 text-[#5DADE2] text-xs font-semibold px-2 py-0.5 rounded">
-                {STATUT_LABELS[user?.statut ?? ""] ?? user?.statut}
-              </span>
               {user?.is_premium && (
                 <span className="bg-[#D4AC0D]/20 text-[#D4AC0D] text-xs font-semibold px-2 py-0.5 rounded">
                   Premium
@@ -205,19 +193,6 @@ export default function ProfilPage() {
                 onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                 className="w-full border border-[#D1D8E0] rounded-lg px-3 py-2 text-sm text-[#1C1F26] bg-[#F8F9FA] focus:outline-none focus:border-[#2E86C1]"
               />
-            </div>
-
-            <div>
-              <label className="text-xs text-[#8694A7] font-semibold block mb-1">Statut</label>
-              <select
-                value={profileForm.statut}
-                onChange={(e) => setProfileForm({ ...profileForm, statut: e.target.value })}
-                className="w-full border border-[#D1D8E0] rounded-lg px-3 py-2 text-sm text-[#1C1F26] bg-[#F8F9FA] focus:outline-none focus:border-[#2E86C1]"
-              >
-                <option value="ade">ADE</option>
-                <option value="aux">Ambulancier DEA</option>
-                <option value="etudiant">Étudiant</option>
-              </select>
             </div>
 
             {profileError && (
