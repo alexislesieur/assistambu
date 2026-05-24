@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class AdminArticleController extends Controller
 {
@@ -39,8 +38,6 @@ class AdminArticleController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $data['slug'] = Str::slug($data['name']);
-
         $article = Article::create($data);
 
         return response()->json($article, 201);
@@ -53,10 +50,6 @@ class AdminArticleController extends Controller
             'categorie' => 'sometimes|in:oxygenotherapie,pansements,immobilisation,medicaments,monitoring,autre',
             'is_active' => 'sometimes|boolean',
         ]);
-
-        if (isset($data['name'])) {
-            $data['slug'] = Str::slug($data['name']);
-        }
 
         $article->update($data);
 

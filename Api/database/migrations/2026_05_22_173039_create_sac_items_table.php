@@ -13,7 +13,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
             $table->string('name');
-            $table->string('slug', 100)->nullable();
             $table->enum('categorie', [
                 'oxygenotherapie',
                 'pansements',
@@ -34,7 +33,6 @@ return new class extends Migration
 
             $table->index(['user_id', 'categorie']);
             $table->index(['user_id', 'status']);
-            $table->unique(['user_id', 'slug']);
         });
     }
 

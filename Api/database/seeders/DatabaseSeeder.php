@@ -34,72 +34,72 @@ class DatabaseSeeder extends Seeder
         // ── Catalogue articles ─────────────────────────────────
         $articles = [
             // Oxygénothérapie
-            ['name' => 'Masque HC adulte',          'slug' => 'masque-hc-adulte',       'categorie' => 'oxygenotherapie'],
-            ['name' => 'Masque HC pédiatrique',     'slug' => 'masque-hc-pediatrique',  'categorie' => 'oxygenotherapie'],
-            ['name' => 'Lunettes O2',               'slug' => 'lunettes-o2',            'categorie' => 'oxygenotherapie'],
-            ['name' => 'Canule de Guedel',          'slug' => 'canule-guedel',          'categorie' => 'oxygenotherapie'],
-            ['name' => 'Bouteille O2 2L',           'slug' => 'bouteille-o2-2l',        'categorie' => 'oxygenotherapie'],
-            ['name' => 'Ballon insufflateur (BAVU)', 'slug' => 'bavu',                  'categorie' => 'oxygenotherapie'],
+            ['name' => 'Masque HC adulte',          'categorie' => 'oxygenotherapie'],
+            ['name' => 'Masque HC pédiatrique',     'categorie' => 'oxygenotherapie'],
+            ['name' => 'Lunettes O2',               'categorie' => 'oxygenotherapie'],
+            ['name' => 'Canule de Guedel',          'categorie' => 'oxygenotherapie'],
+            ['name' => 'Bouteille O2 2L',           'categorie' => 'oxygenotherapie'],
+            ['name' => 'Ballon insufflateur (BAVU)', 'categorie' => 'oxygenotherapie'],
             // Pansements
-            ['name' => 'Compresses stériles 10×10', 'slug' => 'compresses-steriles',   'categorie' => 'pansements'],
-            ['name' => 'Pansement hémostatique',    'slug' => 'pansement-hemostatique', 'categorie' => 'pansements'],
-            ['name' => 'Bandes élastiques',         'slug' => 'bandes-elastiques',      'categorie' => 'pansements'],
-            ['name' => 'Sérum physiologique 250ml', 'slug' => 'serum-physiologique',    'categorie' => 'pansements'],
-            ['name' => 'Sparadrap',                 'slug' => 'sparadrap',              'categorie' => 'pansements'],
-            ['name' => 'Pansement américain',       'slug' => 'pansement-americain',    'categorie' => 'pansements'],
+            ['name' => 'Compresses stériles 10×10', 'categorie' => 'pansements'],
+            ['name' => 'Pansement hémostatique',    'categorie' => 'pansements'],
+            ['name' => 'Bandes élastiques',         'categorie' => 'pansements'],
+            ['name' => 'Sérum physiologique 250ml', 'categorie' => 'pansements'],
+            ['name' => 'Sparadrap',                 'categorie' => 'pansements'],
+            ['name' => 'Pansement américain',       'categorie' => 'pansements'],
             // Immobilisation
-            ['name' => 'Minerve adulte',            'slug' => 'minerve-adulte',         'categorie' => 'immobilisation'],
-            ['name' => 'Minerve pédiatrique',       'slug' => 'minerve-pediatrique',    'categorie' => 'immobilisation'],
-            ['name' => 'Attelle jambe',             'slug' => 'attelle-jambe',          'categorie' => 'immobilisation'],
-            ['name' => 'Attelle bras',              'slug' => 'attelle-bras',           'categorie' => 'immobilisation'],
-            ['name' => 'Matelas immobilisateur',    'slug' => 'matelas-immobilisateur', 'categorie' => 'immobilisation'],
+            ['name' => 'Minerve adulte',            'categorie' => 'immobilisation'],
+            ['name' => 'Minerve pédiatrique',       'categorie' => 'immobilisation'],
+            ['name' => 'Attelle jambe',             'categorie' => 'immobilisation'],
+            ['name' => 'Attelle bras',              'categorie' => 'immobilisation'],
+            ['name' => 'Matelas immobilisateur',    'categorie' => 'immobilisation'],
             // Médicaments
-            ['name' => 'Paracétamol 500mg',         'slug' => 'paracetamol-500',        'categorie' => 'medicaments'],
-            ['name' => 'Aspirine 500mg',             'slug' => 'aspirine-500',           'categorie' => 'medicaments'],
-            ['name' => 'Naloxone 0.4mg',             'slug' => 'naloxone',               'categorie' => 'medicaments'],
-            ['name' => 'Glucose 30%',                'slug' => 'glucose-30',             'categorie' => 'medicaments'],
-            ['name' => 'Adrénaline 1mg',             'slug' => 'adrenaline-1mg',         'categorie' => 'medicaments'],
+            ['name' => 'Paracétamol 500mg',         'categorie' => 'medicaments'],
+            ['name' => 'Aspirine 500mg',            'categorie' => 'medicaments'],
+            ['name' => 'Naloxone 0.4mg',            'categorie' => 'medicaments'],
+            ['name' => 'Glucose 30%',               'categorie' => 'medicaments'],
+            ['name' => 'Adrénaline 1mg',            'categorie' => 'medicaments'],
             // Monitoring
-            ['name' => 'Électrodes ECG',             'slug' => 'electrodes-ecg',         'categorie' => 'monitoring'],
-            ['name' => 'Capteur SpO2',               'slug' => 'capteur-spo2',           'categorie' => 'monitoring'],
-            ['name' => 'Tensiomètre',                'slug' => 'tensiometre',            'categorie' => 'monitoring'],
-            ['name' => 'Glucomètre',                 'slug' => 'glucometre',             'categorie' => 'monitoring'],
-            ['name' => 'Thermomètre',                'slug' => 'thermometre',            'categorie' => 'monitoring'],
+            ['name' => 'Électrodes ECG',            'categorie' => 'monitoring'],
+            ['name' => 'Capteur SpO2',              'categorie' => 'monitoring'],
+            ['name' => 'Tensiomètre',               'categorie' => 'monitoring'],
+            ['name' => 'Glucomètre',                'categorie' => 'monitoring'],
+            ['name' => 'Thermomètre',               'categorie' => 'monitoring'],
             // Autre
-            ['name' => 'Gants nitrile M',            'slug' => 'gants-nitrile-m',        'categorie' => 'autre'],
-            ['name' => 'Gants nitrile L',            'slug' => 'gants-nitrile-l',        'categorie' => 'autre'],
-            ['name' => 'Masques chirurgicaux',       'slug' => 'masques-chirurgicaux',   'categorie' => 'autre'],
-            ['name' => 'Masques FFP2',               'slug' => 'masques-ffp2',           'categorie' => 'autre'],
-            ['name' => 'Couverture de survie',       'slug' => 'couverture-survie',      'categorie' => 'autre'],
-            ['name' => 'Ciseaux trauma',             'slug' => 'ciseaux-trauma',         'categorie' => 'autre'],
+            ['name' => 'Gants nitrile M',           'categorie' => 'autre'],
+            ['name' => 'Gants nitrile L',           'categorie' => 'autre'],
+            ['name' => 'Masques chirurgicaux',      'categorie' => 'autre'],
+            ['name' => 'Masques FFP2',              'categorie' => 'autre'],
+            ['name' => 'Couverture de survie',      'categorie' => 'autre'],
+            ['name' => 'Ciseaux trauma',            'categorie' => 'autre'],
         ];
 
         foreach ($articles as $a) {
-            Article::firstOrCreate(['slug' => $a['slug']], $a);
+            Article::firstOrCreate(['name' => $a['name']], $a);
         }
 
         // ── Sac de test ────────────────────────────────────────
         $sacItems = [
-            ['name' => 'Masque HC adulte',          'slug' => 'masque-hc-adulte',       'categorie' => 'oxygenotherapie', 'qty_current' => 3,  'qty_max' => 5,  'dlc' => '12/2026'],
-            ['name' => 'Masque HC pédiatrique',     'slug' => 'masque-hc-pediatrique',  'categorie' => 'oxygenotherapie', 'qty_current' => 2,  'qty_max' => 3,  'dlc' => '08/2026'],
-            ['name' => 'Lunettes O2',               'slug' => 'lunettes-o2',            'categorie' => 'oxygenotherapie', 'qty_current' => 5,  'qty_max' => 8,  'dlc' => '03/2027'],
-            ['name' => 'Canule de Guedel',          'slug' => 'canule-guedel',          'categorie' => 'oxygenotherapie', 'qty_current' => 4,  'qty_max' => 4,  'dlc' => null],
-            ['name' => 'Bouteille O2 2L',           'slug' => 'bouteille-o2-2l',        'categorie' => 'oxygenotherapie', 'qty_current' => 1,  'qty_max' => 2,  'dlc' => null, 'note' => 'Pression: 140 bar'],
-            ['name' => 'Compresses stériles 10×10', 'slug' => 'compresses-steriles',    'categorie' => 'pansements',      'qty_current' => 2,  'qty_max' => 10, 'dlc' => '06/2026'],
-            ['name' => 'Pansement hémostatique',    'slug' => 'pansement-hemostatique', 'categorie' => 'pansements',      'qty_current' => 0,  'qty_max' => 3,  'dlc' => null],
-            ['name' => 'Bandes élastiques',         'slug' => 'bandes-elastiques',      'categorie' => 'pansements',      'qty_current' => 6,  'qty_max' => 8,  'dlc' => '09/2027'],
-            ['name' => 'Sérum physiologique 250ml', 'slug' => 'serum-physiologique',    'categorie' => 'pansements',      'qty_current' => 4,  'qty_max' => 6,  'dlc' => '11/2026'],
-            ['name' => 'Minerve adulte',            'slug' => 'minerve-adulte',         'categorie' => 'immobilisation',  'qty_current' => 2,  'qty_max' => 2,  'dlc' => null],
-            ['name' => 'Attelle jambe',             'slug' => 'attelle-jambe',          'categorie' => 'immobilisation',  'qty_current' => 1,  'qty_max' => 2,  'dlc' => null],
-            ['name' => 'Paracétamol 500mg',         'slug' => 'paracetamol-500',        'categorie' => 'medicaments',     'qty_current' => 8,  'qty_max' => 10, 'dlc' => '11/2026'],
-            ['name' => 'Aspirine 500mg',            'slug' => 'aspirine-500',           'categorie' => 'medicaments',     'qty_current' => 4,  'qty_max' => 6,  'dlc' => '02/2027'],
-            ['name' => 'Gants nitrile M',           'slug' => 'gants-nitrile-m',        'categorie' => 'autre',           'qty_current' => 18, 'qty_max' => 50, 'dlc' => '07/2027'],
-            ['name' => 'Masques FFP2',              'slug' => 'masques-ffp2',           'categorie' => 'autre',           'qty_current' => 0,  'qty_max' => 10, 'dlc' => null],
+            ['name' => 'Masque HC adulte',          'categorie' => 'oxygenotherapie', 'qty_current' => 3,  'qty_max' => 5,  'dlc' => '12/2026'],
+            ['name' => 'Masque HC pédiatrique',     'categorie' => 'oxygenotherapie', 'qty_current' => 2,  'qty_max' => 3,  'dlc' => '08/2026'],
+            ['name' => 'Lunettes O2',               'categorie' => 'oxygenotherapie', 'qty_current' => 5,  'qty_max' => 8,  'dlc' => '03/2027'],
+            ['name' => 'Canule de Guedel',          'categorie' => 'oxygenotherapie', 'qty_current' => 4,  'qty_max' => 4,  'dlc' => null],
+            ['name' => 'Bouteille O2 2L',           'categorie' => 'oxygenotherapie', 'qty_current' => 1,  'qty_max' => 2,  'dlc' => null, 'note' => 'Pression: 140 bar'],
+            ['name' => 'Compresses stériles 10×10', 'categorie' => 'pansements',      'qty_current' => 2,  'qty_max' => 10, 'dlc' => '06/2026'],
+            ['name' => 'Pansement hémostatique',    'categorie' => 'pansements',      'qty_current' => 0,  'qty_max' => 3,  'dlc' => null],
+            ['name' => 'Bandes élastiques',         'categorie' => 'pansements',      'qty_current' => 6,  'qty_max' => 8,  'dlc' => '09/2027'],
+            ['name' => 'Sérum physiologique 250ml', 'categorie' => 'pansements',      'qty_current' => 4,  'qty_max' => 6,  'dlc' => '11/2026'],
+            ['name' => 'Minerve adulte',            'categorie' => 'immobilisation',  'qty_current' => 2,  'qty_max' => 2,  'dlc' => null],
+            ['name' => 'Attelle jambe',             'categorie' => 'immobilisation',  'qty_current' => 1,  'qty_max' => 2,  'dlc' => null],
+            ['name' => 'Paracétamol 500mg',         'categorie' => 'medicaments',     'qty_current' => 8,  'qty_max' => 10, 'dlc' => '11/2026'],
+            ['name' => 'Aspirine 500mg',            'categorie' => 'medicaments',     'qty_current' => 4,  'qty_max' => 6,  'dlc' => '02/2027'],
+            ['name' => 'Gants nitrile M',           'categorie' => 'autre',           'qty_current' => 18, 'qty_max' => 50, 'dlc' => '07/2027'],
+            ['name' => 'Masques FFP2',              'categorie' => 'autre',           'qty_current' => 0,  'qty_max' => 10, 'dlc' => null],
         ];
 
         foreach ($sacItems as $itemData) {
             $item = SacItem::firstOrCreate(
-                ['user_id' => $user->id, 'slug' => $itemData['slug']],
+                ['user_id' => $user->id, 'name' => $itemData['name']],
                 array_merge($itemData, ['user_id' => $user->id])
             );
             $item->recalculerStatus();

@@ -13,7 +13,6 @@ class SacItem extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'slug',
         'categorie',
         'qty_current',
         'qty_max',
