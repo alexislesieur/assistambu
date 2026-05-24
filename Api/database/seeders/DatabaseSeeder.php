@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Article;
 use App\Models\Hopital;
 use App\Models\Protocole;
 use App\Models\SacItem;
@@ -15,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Admin ──────────────────────────────────────────────
-        User::firstOrCreate(['email' => 'admin@assistambu.fr'], [
+        User::firstOrCreate(['email' => 'admin@assist-ambu.fr'], [
             'first_name' => 'Admin',
             'last_name'  => 'AssistAmbu',
             'password'   => Hash::make('password'),
@@ -25,30 +26,77 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ── Utilisateur de test ────────────────────────────────
-        $user = User::firstOrCreate(['email' => 'test@assistambu.fr'], [
+        $user = User::firstOrCreate(['email' => 'test@assist-ambu.fr'], [
             'first_name' => 'Marc',
             'last_name'  => 'Ambulancier',
             'password'   => Hash::make('password'),
             'statut'     => 'ade',
         ]);
 
-        // ── Sac par défaut ─────────────────────────────────────
+        // ── Catalogue articles ─────────────────────────────────
+        $articles = [
+            // Oxygénothérapie
+            ['name' => 'Masque HC adulte',          'slug' => 'masque-hc-adulte',       'categorie' => 'oxygenotherapie'],
+            ['name' => 'Masque HC pédiatrique',     'slug' => 'masque-hc-pediatrique',  'categorie' => 'oxygenotherapie'],
+            ['name' => 'Lunettes O2',               'slug' => 'lunettes-o2',            'categorie' => 'oxygenotherapie'],
+            ['name' => 'Canule de Guedel',          'slug' => 'canule-guedel',          'categorie' => 'oxygenotherapie'],
+            ['name' => 'Bouteille O2 2L',           'slug' => 'bouteille-o2-2l',        'categorie' => 'oxygenotherapie'],
+            ['name' => 'Ballon insufflateur (BAVU)', 'slug' => 'bavu',                  'categorie' => 'oxygenotherapie'],
+            // Pansements
+            ['name' => 'Compresses stériles 10×10', 'slug' => 'compresses-steriles',   'categorie' => 'pansements'],
+            ['name' => 'Pansement hémostatique',    'slug' => 'pansement-hemostatique', 'categorie' => 'pansements'],
+            ['name' => 'Bandes élastiques',         'slug' => 'bandes-elastiques',      'categorie' => 'pansements'],
+            ['name' => 'Sérum physiologique 250ml', 'slug' => 'serum-physiologique',    'categorie' => 'pansements'],
+            ['name' => 'Sparadrap',                 'slug' => 'sparadrap',              'categorie' => 'pansements'],
+            ['name' => 'Pansement américain',       'slug' => 'pansement-americain',    'categorie' => 'pansements'],
+            // Immobilisation
+            ['name' => 'Minerve adulte',            'slug' => 'minerve-adulte',         'categorie' => 'immobilisation'],
+            ['name' => 'Minerve pédiatrique',       'slug' => 'minerve-pediatrique',    'categorie' => 'immobilisation'],
+            ['name' => 'Attelle jambe',             'slug' => 'attelle-jambe',          'categorie' => 'immobilisation'],
+            ['name' => 'Attelle bras',              'slug' => 'attelle-bras',           'categorie' => 'immobilisation'],
+            ['name' => 'Matelas immobilisateur',    'slug' => 'matelas-immobilisateur', 'categorie' => 'immobilisation'],
+            // Médicaments
+            ['name' => 'Paracétamol 500mg',         'slug' => 'paracetamol-500',        'categorie' => 'medicaments'],
+            ['name' => 'Aspirine 500mg',             'slug' => 'aspirine-500',           'categorie' => 'medicaments'],
+            ['name' => 'Naloxone 0.4mg',             'slug' => 'naloxone',               'categorie' => 'medicaments'],
+            ['name' => 'Glucose 30%',                'slug' => 'glucose-30',             'categorie' => 'medicaments'],
+            ['name' => 'Adrénaline 1mg',             'slug' => 'adrenaline-1mg',         'categorie' => 'medicaments'],
+            // Monitoring
+            ['name' => 'Électrodes ECG',             'slug' => 'electrodes-ecg',         'categorie' => 'monitoring'],
+            ['name' => 'Capteur SpO2',               'slug' => 'capteur-spo2',           'categorie' => 'monitoring'],
+            ['name' => 'Tensiomètre',                'slug' => 'tensiometre',            'categorie' => 'monitoring'],
+            ['name' => 'Glucomètre',                 'slug' => 'glucometre',             'categorie' => 'monitoring'],
+            ['name' => 'Thermomètre',                'slug' => 'thermometre',            'categorie' => 'monitoring'],
+            // Autre
+            ['name' => 'Gants nitrile M',            'slug' => 'gants-nitrile-m',        'categorie' => 'autre'],
+            ['name' => 'Gants nitrile L',            'slug' => 'gants-nitrile-l',        'categorie' => 'autre'],
+            ['name' => 'Masques chirurgicaux',       'slug' => 'masques-chirurgicaux',   'categorie' => 'autre'],
+            ['name' => 'Masques FFP2',               'slug' => 'masques-ffp2',           'categorie' => 'autre'],
+            ['name' => 'Couverture de survie',       'slug' => 'couverture-survie',      'categorie' => 'autre'],
+            ['name' => 'Ciseaux trauma',             'slug' => 'ciseaux-trauma',         'categorie' => 'autre'],
+        ];
+
+        foreach ($articles as $a) {
+            Article::firstOrCreate(['slug' => $a['slug']], $a);
+        }
+
+        // ── Sac de test ────────────────────────────────────────
         $sacItems = [
-            ['name' => 'Masque HC adulte',          'slug' => 'masque_hc_ad',  'categorie' => 'oxygenotherapie', 'qty_current' => 3,  'qty_max' => 5,  'dlc' => '12/2026'],
-            ['name' => 'Masque HC pédiatrique',     'slug' => 'masque_hc_pe',  'categorie' => 'oxygenotherapie', 'qty_current' => 2,  'qty_max' => 3,  'dlc' => '08/2026'],
-            ['name' => 'Lunettes O2',               'slug' => 'lunettes_o2',   'categorie' => 'oxygenotherapie', 'qty_current' => 5,  'qty_max' => 8,  'dlc' => '03/2027'],
-            ['name' => 'Canule de Guedel (x4)',     'slug' => 'canule_guedel', 'categorie' => 'oxygenotherapie', 'qty_current' => 4,  'qty_max' => 4,  'dlc' => null],
-            ['name' => 'Bouteille O2 2L',           'slug' => 'bouteille_o2',  'categorie' => 'oxygenotherapie', 'qty_current' => 1,  'qty_max' => 2,  'dlc' => null,      'note' => 'Pression: 140 bar'],
-            ['name' => 'Compresses stériles 10×10', 'slug' => 'compresses',    'categorie' => 'pansements',      'qty_current' => 2,  'qty_max' => 10, 'dlc' => '06/2026'],
-            ['name' => 'Pansement hémostatique',    'slug' => 'pans_hemo',     'categorie' => 'pansements',      'qty_current' => 0,  'qty_max' => 3,  'dlc' => null],
-            ['name' => 'Bandes élastiques',         'slug' => 'bandes_elast',  'categorie' => 'pansements',      'qty_current' => 6,  'qty_max' => 8,  'dlc' => '09/2027'],
-            ['name' => 'Sérum physiologique 250ml', 'slug' => 'serum_physio',  'categorie' => 'pansements',      'qty_current' => 4,  'qty_max' => 6,  'dlc' => '05/2026'],
-            ['name' => 'Minerve adulte',             'slug' => 'minerve_ad',   'categorie' => 'immobilisation',  'qty_current' => 2,  'qty_max' => 2,  'dlc' => null],
-            ['name' => 'Attelle jambe',              'slug' => 'attelle_jambe','categorie' => 'immobilisation',  'qty_current' => 1,  'qty_max' => 2,  'dlc' => null],
-            ['name' => 'Paracétamol 500mg',          'slug' => 'paracetamol',  'categorie' => 'medicaments',     'qty_current' => 8,  'qty_max' => 10, 'dlc' => '11/2026'],
-            ['name' => 'Aspirine 500mg',             'slug' => 'aspirine',     'categorie' => 'medicaments',     'qty_current' => 4,  'qty_max' => 6,  'dlc' => '02/2027'],
-            ['name' => 'Gants nitrile M',            'slug' => 'gants_nitrile','categorie' => 'medicaments',     'qty_current' => 18, 'qty_max' => 50, 'dlc' => '07/2027'],
-            ['name' => 'Masques FFP2',               'slug' => 'masques_ffp2', 'categorie' => 'medicaments',     'qty_current' => 0,  'qty_max' => 10, 'dlc' => null],
+            ['name' => 'Masque HC adulte',          'slug' => 'masque-hc-adulte',       'categorie' => 'oxygenotherapie', 'qty_current' => 3,  'qty_max' => 5,  'dlc' => '12/2026'],
+            ['name' => 'Masque HC pédiatrique',     'slug' => 'masque-hc-pediatrique',  'categorie' => 'oxygenotherapie', 'qty_current' => 2,  'qty_max' => 3,  'dlc' => '08/2026'],
+            ['name' => 'Lunettes O2',               'slug' => 'lunettes-o2',            'categorie' => 'oxygenotherapie', 'qty_current' => 5,  'qty_max' => 8,  'dlc' => '03/2027'],
+            ['name' => 'Canule de Guedel',          'slug' => 'canule-guedel',          'categorie' => 'oxygenotherapie', 'qty_current' => 4,  'qty_max' => 4,  'dlc' => null],
+            ['name' => 'Bouteille O2 2L',           'slug' => 'bouteille-o2-2l',        'categorie' => 'oxygenotherapie', 'qty_current' => 1,  'qty_max' => 2,  'dlc' => null, 'note' => 'Pression: 140 bar'],
+            ['name' => 'Compresses stériles 10×10', 'slug' => 'compresses-steriles',    'categorie' => 'pansements',      'qty_current' => 2,  'qty_max' => 10, 'dlc' => '06/2026'],
+            ['name' => 'Pansement hémostatique',    'slug' => 'pansement-hemostatique', 'categorie' => 'pansements',      'qty_current' => 0,  'qty_max' => 3,  'dlc' => null],
+            ['name' => 'Bandes élastiques',         'slug' => 'bandes-elastiques',      'categorie' => 'pansements',      'qty_current' => 6,  'qty_max' => 8,  'dlc' => '09/2027'],
+            ['name' => 'Sérum physiologique 250ml', 'slug' => 'serum-physiologique',    'categorie' => 'pansements',      'qty_current' => 4,  'qty_max' => 6,  'dlc' => '11/2026'],
+            ['name' => 'Minerve adulte',            'slug' => 'minerve-adulte',         'categorie' => 'immobilisation',  'qty_current' => 2,  'qty_max' => 2,  'dlc' => null],
+            ['name' => 'Attelle jambe',             'slug' => 'attelle-jambe',          'categorie' => 'immobilisation',  'qty_current' => 1,  'qty_max' => 2,  'dlc' => null],
+            ['name' => 'Paracétamol 500mg',         'slug' => 'paracetamol-500',        'categorie' => 'medicaments',     'qty_current' => 8,  'qty_max' => 10, 'dlc' => '11/2026'],
+            ['name' => 'Aspirine 500mg',            'slug' => 'aspirine-500',           'categorie' => 'medicaments',     'qty_current' => 4,  'qty_max' => 6,  'dlc' => '02/2027'],
+            ['name' => 'Gants nitrile M',           'slug' => 'gants-nitrile-m',        'categorie' => 'autre',           'qty_current' => 18, 'qty_max' => 50, 'dlc' => '07/2027'],
+            ['name' => 'Masques FFP2',              'slug' => 'masques-ffp2',           'categorie' => 'autre',           'qty_current' => 0,  'qty_max' => 10, 'dlc' => null],
         ];
 
         foreach ($sacItems as $itemData) {
@@ -61,13 +109,13 @@ class DatabaseSeeder extends Seeder
 
         // ── Hôpitaux ───────────────────────────────────────────
         $hopitaux = [
-            ['name' => 'CHU Lille - Urgences adultes',    'ville' => 'Lille',          'departement' => '59', 'telephone' => '03 20 44 44 44'],
-            ['name' => 'CH Roubaix - SAU',                'ville' => 'Roubaix',        'departement' => '59', 'telephone' => '03 20 99 31 31'],
-            ['name' => 'CH Valenciennes',                  'ville' => 'Valenciennes',   'departement' => '59'],
-            ['name' => 'Hôpital Lariboisière - Urgences', 'ville' => 'Paris',          'departement' => '75', 'telephone' => '01 49 95 65 65'],
-            ['name' => 'Hôtel-Dieu - SAU',                'ville' => 'Paris',          'departement' => '75'],
-            ['name' => 'CHU Bordeaux - Pellegrin',        'ville' => 'Bordeaux',       'departement' => '33'],
-            ['name' => 'CHU Montpellier - Lapeyronie',    'ville' => 'Montpellier',    'departement' => '34'],
+            ['name' => 'CHU Lille - Urgences adultes',    'ville' => 'Lille',        'departement' => '59', 'telephone' => '03 20 44 44 44'],
+            ['name' => 'CH Roubaix - SAU',                'ville' => 'Roubaix',      'departement' => '59', 'telephone' => '03 20 99 31 31'],
+            ['name' => 'CH Valenciennes',                  'ville' => 'Valenciennes', 'departement' => '59'],
+            ['name' => 'Hôpital Lariboisière - Urgences', 'ville' => 'Paris',        'departement' => '75', 'telephone' => '01 49 95 65 65'],
+            ['name' => 'Hôtel-Dieu - SAU',                'ville' => 'Paris',        'departement' => '75'],
+            ['name' => 'CHU Bordeaux - Pellegrin',        'ville' => 'Bordeaux',     'departement' => '33'],
+            ['name' => 'CHU Montpellier - Lapeyronie',    'ville' => 'Montpellier',  'departement' => '34'],
         ];
 
         foreach ($hopitaux as $h) {
@@ -118,7 +166,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command->info('✅ Base de données initialisée.');
-        $this->command->line('   admin@assistambu.fr / password');
-        $this->command->line('   test@assistambu.fr  / password');
+        $this->command->line('   admin@assist-ambu.fr / password');
+        $this->command->line('   test@assist-ambu.fr  / password');
     }
 }
