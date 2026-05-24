@@ -68,6 +68,17 @@ class InterventionController extends Controller
             'notes'                          => 'nullable|string|max:2000',
         ]);
 
+        if (empty($data['garde_id'])) {
+            $gardeActiveId = $request->user()
+                ->gardes()
+                ->actif()
+                ->where('is_running', true)
+                ->value('id');
+            if ($gardeActiveId) {
+                $data['garde_id'] = $gardeActiveId;
+            }
+        }
+
         if (!empty($data['materiel_consomme'])) {
             $this->deduireMateriel($request->user()->id, $data['materiel_consomme']);
         }

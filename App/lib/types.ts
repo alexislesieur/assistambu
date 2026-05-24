@@ -64,6 +64,7 @@ export interface Garde {
   type: "jour" | "nuit" | "garde_24h" | "astreinte";
   binome: string | null;
   is_cloturee: boolean;
+  is_running: boolean;
   cloturee_at: string | null;
   notes_recap: string | null;
   interventions_count: number | null;

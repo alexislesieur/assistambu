@@ -39,8 +39,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('sac/items/{sacItem}/consume',  [SacItemController::class, 'consume']);
     Route::post('sac/items/{sacItem}/restock',  [SacItemController::class, 'restock']);
 
-    Route::apiResource('gardes', GardeController::class);
+    Route::get('gardes/active',                 [GardeController::class, 'active']);
     Route::get('gardes/stats/mensuel',          [GardeController::class, 'statsMensuel']);
+    Route::apiResource('gardes', GardeController::class);
+    Route::post('gardes/{garde}/demarrer',      [GardeController::class, 'demarrer']);
     Route::post('gardes/{garde}/cloturer',      [GardeController::class, 'cloturer']);
 });
 

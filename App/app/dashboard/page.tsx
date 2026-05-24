@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useGardeActive } from "@/hooks/useGardeActive";
 import { api } from "@/lib/api";
 import MobileHeader from "@/components/MobileHeader";
 import BottomNav from "@/components/BottomNav";
@@ -23,8 +25,17 @@ interface InterventionsResponse {
   data: Intervention[];
 }
 
+const TYPE_LABELS: Record<string, string> = {
+  jour: "Garde de jour",
+  nuit: "Garde de nuit",
+  garde_24h: "Garde 24h",
+  astreinte: "Astreinte",
+};
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const router = useRouter();
+  const { garde: gardeActive, loading: gardeLoading } = useGardeActive();
   const [sacStats, setSacStats] = useState<SacStats | null>(null);
   const [interventions, setInterventions] = useState<Intervention[]>([]);
 
@@ -60,6 +71,49 @@ export default function DashboardPage() {
             {now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
           </p>
         </div>
+
+        {!gardeLoading && !gardeActive && (
+          <button
+            onClick={() => router.push("/planning")}
+            className="w-full bg-white rounded-xl border border-[#D1D8E0] p-4 flex items-center justify-between"
+          >
+            <div className="text-left">
+              <div className="text-[#0A1E3D] font-bold text-sm">Aucune garde en cours</div>
+              <div className="text-[#8694A7] text-xs mt-0.5">Démarrer une garde depuis le planning</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8694A7" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        )}
+
+        {gardeActive && (
+          <div className="bg-[#0A1E3D] rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-[#27AE60] animate-pulse" />
+              <span className="text-white font-bold text-sm uppercase tracking-wide">
+                Garde en cours
+              </span>
+            </div>
+            <div className="text-[#8694A7] text-xs mb-1">
+              {TYPE_LABELS[gardeActive.type]} · {gardeActive.heure_debut} → {gardeActive.heure_fin}
+            </div>
+            {gardeActive.binome && (
+              <div className="text-[#8694A7] text-xs mb-3">Binôme : {gardeActive.binome}</div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-[#8694A7] text-xs font-mono">
+                {gardeActive.interventions_count ?? 0} intervention{(gardeActive.interventions_count ?? 0) > 1 ? "s" : ""}
+              </span>
+              <button
+                onClick={() => router.push("/interventions/nouvelle")}
+                className="bg-[#2E86C1] text-white text-sm font-semibold px-4 py-2 rounded-lg"
+              >
+                + Intervention
+              </button>
+            </div>
+          </div>
+        )}
 
         {sacStats && (
           <div className="bg-white rounded-xl border border-[#D1D8E0] p-4">
@@ -100,7 +154,7 @@ export default function DashboardPage() {
               Dernières interventions
             </h3>
             <button
-              onClick={() => window.location.href = "/interventions"}
+              onClick={() => router.push("/interventions")}
               className="text-[#2E86C1] text-xs font-semibold"
             >
               Voir tout
@@ -111,7 +165,7 @@ export default function DashboardPage() {
             <div className="bg-white rounded-xl border border-[#D1D8E0] p-6 text-center">
               <p className="text-[#8694A7] text-sm">Aucune intervention enregistrée</p>
               <button
-                onClick={() => window.location.href = "/interventions/nouvelle"}
+                onClick={() => router.push("/interventions/nouvelle")}
                 className="mt-3 inline-block bg-[#2E86C1] text-white text-sm font-semibold px-4 py-2 rounded-lg"
               >
                 Nouvelle intervention

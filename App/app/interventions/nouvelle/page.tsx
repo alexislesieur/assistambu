@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useGardeActive } from "@/hooks/useGardeActive";
 import { api } from "@/lib/api";
 import MobileHeader from "@/components/MobileHeader";
 import type { Intervention } from "@/lib/types";
@@ -28,9 +29,14 @@ const GESTES_SUGGERES = [
   "Intubation", "Aspiration",
 ];
 
+const TYPE_LABELS: Record<string, string> = {
+  jour: "Garde de jour", nuit: "Garde de nuit", garde_24h: "Garde 24h", astreinte: "Astreinte",
+};
+
 export default function NouvelleInterventionPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { garde: gardeActive } = useGardeActive();
 
   const [motif, setMotif] = useState("");
   const [categorie, setCategorie] = useState<Categorie>("autre");
@@ -119,6 +125,15 @@ export default function NouvelleInterventionPage() {
 
       <form onSubmit={handleSubmit} className="px-4 py-5 space-y-4">
         <h2 className="text-[#1C1F26] text-xl font-bold">Nouvelle intervention</h2>
+
+        {gardeActive && (
+          <div className="flex items-center gap-2 bg-[#E6F9ED] border border-[#B2E0C4] rounded-xl px-4 py-3">
+            <span className="w-2 h-2 rounded-full bg-[#27AE60] shrink-0 animate-pulse" />
+            <span className="text-[#1D8348] text-sm font-semibold">
+              {TYPE_LABELS[gardeActive.type]} en cours — rattachement automatique
+            </span>
+          </div>
+        )}
 
         {error && (
           <div className="bg-[#FDEDEC] border border-[#F1948A] rounded-xl px-4 py-3 text-[#922B21] text-sm">

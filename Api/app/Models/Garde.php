@@ -22,6 +22,7 @@ class Garde extends Model
         'cloturee_at',
         'notes_recap',
         'is_active',
+        'is_running',
     ];
 
     protected $casts = [
@@ -29,6 +30,7 @@ class Garde extends Model
         'cloturee_at' => 'datetime',
         'is_cloturee' => 'boolean',
         'is_active'   => 'boolean',
+        'is_running'  => 'boolean',
     ];
 
     protected static function booted(): void

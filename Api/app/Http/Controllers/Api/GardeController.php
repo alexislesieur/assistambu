@@ -112,6 +112,37 @@ class GardeController extends Controller
         ]);
     }
 
+    public function active(Request $request): JsonResponse
+    {
+        $garde = $request->user()
+            ->gardes()
+            ->actif()
+            ->where('is_running', true)
+            ->withCount('interventions')
+            ->first();
+
+        return response()->json($garde);
+    }
+
+    public function demarrer(Request $request, Garde $garde): JsonResponse
+    {
+        if ($garde->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
+        if ($garde->is_cloturee) {
+            return response()->json(['message' => 'Garde déjà clôturée.'], 422);
+        }
+
+        $request->user()->gardes()->where('is_running', true)->update(['is_running' => false]);
+
+        $garde->update(['is_running' => true]);
+
+        ActivityLog::record('garde.demarree', $garde);
+
+        return response()->json($garde->fresh());
+    }
+
     public function cloturer(Request $request, Garde $garde): JsonResponse
     {
         if ($garde->user_id !== $request->user()->id) {
@@ -144,6 +175,7 @@ class GardeController extends Controller
 
         $garde->update([
             'is_cloturee' => true,
+            'is_running'  => false,
             'cloturee_at' => now(),
             'notes_recap' => $request->notes_recap,
         ]);
