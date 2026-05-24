@@ -24,10 +24,6 @@ class AdminUserController extends Controller
             });
         }
 
-        if ($request->filled('statut')) {
-            $query->where('statut', $request->statut);
-        }
-
         if ($request->boolean('locked')) {
             $query->where('is_locked', true);
         }
@@ -121,11 +117,11 @@ class AdminUserController extends Controller
 
         return response()->stream(function () use ($users) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['ID', 'Prénom', 'Nom', 'Email', 'Statut', 'Premium', 'Interventions', 'Gardes', 'Inscrit le']);
+            fputcsv($handle, ['ID', 'Prénom', 'Nom', 'Email', 'Premium', 'Interventions', 'Gardes', 'Inscrit le']);
             foreach ($users as $u) {
                 fputcsv($handle, [
                     $u->id, $u->first_name, $u->last_name, $u->email,
-                    $u->statut, $u->isPremium() ? 'Oui' : 'Non',
+                    $u->isPremium() ? 'Oui' : 'Non',
                     $u->interventions_count, $u->gardes_count,
                     $u->created_at->format('d/m/Y'),
                 ]);

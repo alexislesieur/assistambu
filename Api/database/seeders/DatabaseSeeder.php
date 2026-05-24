@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Admin',
             'last_name'  => 'AssistAmbu',
             'password'   => Hash::make('password'),
-            'statut'     => 'ade',
             'is_admin'   => true,
             'is_premium' => true,
         ]);
@@ -30,7 +29,6 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Marc',
             'last_name'  => 'Ambulancier',
             'password'   => Hash::make('password'),
-            'statut'     => 'ade',
         ]);
 
         // ── Catalogue articles ─────────────────────────────────

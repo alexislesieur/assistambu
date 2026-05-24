@@ -21,7 +21,6 @@ class AuthController extends Controller
             'last_name'  => 'required|string|max:50',
             'email'      => 'required|email|unique:users,email',
             'password'   => 'required|string|min:8|confirmed',
-            'statut'     => 'nullable|in:ade,aux,etudiant',
         ]);
 
         $user  = User::create($data);
@@ -76,7 +75,6 @@ class AuthController extends Controller
             'first_name' => 'sometimes|string|max:50',
             'last_name'  => 'sometimes|string|max:50',
             'email'      => 'sometimes|email|unique:users,email,' . $request->user()->id,
-            'statut'     => 'sometimes|in:ade,aux,etudiant',
         ]);
 
         $request->user()->update($data);
