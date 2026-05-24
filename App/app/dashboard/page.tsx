@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="AssistAmbu" user={user} />
+      <MobileHeader title="AssistAmbu" />
 
       <div className="px-4 py-5 space-y-4">
 

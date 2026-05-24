@@ -140,7 +140,7 @@ export default function ProfilPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="Mon compte" user={user} />
+      <MobileHeader title="Mon compte" />
 
       <div className="px-4 py-5 space-y-4">
 

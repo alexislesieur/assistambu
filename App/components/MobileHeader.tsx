@@ -1,15 +1,12 @@
 "use client";
 
-import type { User } from "@/lib/types";
-
 interface Props {
   title: string;
-  user?: User | null;
   showBack?: boolean;
   onBack?: () => void;
 }
 
-export default function MobileHeader({ title, user, showBack, onBack }: Props) {
+export default function MobileHeader({ title, showBack, onBack }: Props) {
   return (
     <div className="bg-[#0A1E3D] border-b-2 border-[#2E86C1] px-4 pt-12 pb-4">
       <div className="flex items-center justify-between">
@@ -40,14 +37,12 @@ export default function MobileHeader({ title, user, showBack, onBack }: Props) {
             Assist<span className="text-[#5DADE2]">Ambu</span>
           </h1>
         </div>
-        {user && (
-          <div className="text-right">
-            <div className="text-white text-sm font-semibold">{user.first_name}</div>
-            <div className="text-[#5DADE2] text-xs font-mono">
-              {user.statut.toUpperCase()}
-            </div>
-          </div>
-        )}
+        <button className="text-[#5DADE2] p-1">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+        </button>
       </div>
     </div>
   );

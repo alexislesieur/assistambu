@@ -132,7 +132,7 @@ export default function SacPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="Sac d'intervention" user={user} />
+      <MobileHeader title="Sac d'intervention" />
 
       <div className="px-4 py-5 space-y-4">
 

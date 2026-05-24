@@ -109,7 +109,7 @@ export default function InterventionsPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="Journal" user={user} />
+      <MobileHeader title="Journal" />
 
       <div className="px-4 py-5 space-y-4">
 

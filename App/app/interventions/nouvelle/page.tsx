@@ -113,7 +113,6 @@ export default function NouvelleInterventionPage() {
     <div className="min-h-screen bg-[#F0F2F5] pb-10">
       <MobileHeader
         title="Nouvelle intervention"
-        user={user}
         showBack
         onBack={() => router.push("/interventions")}
       />

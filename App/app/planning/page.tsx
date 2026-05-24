@@ -91,7 +91,7 @@ export default function PlanningPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="Planning" user={user} />
+      <MobileHeader title="Planning" />
 
       <div className="px-4 py-5 space-y-4">
 
