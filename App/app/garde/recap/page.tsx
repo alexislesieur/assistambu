@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
 import MobileHeader from "@/components/MobileHeader";
@@ -50,10 +50,18 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default function GardeRecapPage() {
+  return (
+    <Suspense>
+      <GardeRecapContent />
+    </Suspense>
+  );
+}
+
+function GardeRecapContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const params = useParams();
-  const gardeId = params.id as string;
+  const searchParams = useSearchParams();
+  const gardeId = searchParams.get("id");
 
   const [data, setData] = useState<RecapData | null>(null);
   const [fetching, setFetching] = useState(true);

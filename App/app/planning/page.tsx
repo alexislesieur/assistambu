@@ -126,7 +126,7 @@ export default function PlanningPage() {
       sessionStorage.setItem(`garde_recap_${cloturerId}`, JSON.stringify(res));
       setCloturerId(null);
       setNotesRecap("");
-      router.push(`/garde/${cloturerId}/recap`);
+      router.push(`/garde/recap?id=${cloturerId}`);
     } catch {
       setActionId(null);
     }
