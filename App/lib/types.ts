@@ -3,7 +3,6 @@ export interface User {
   first_name: string;
   last_name: string;
   email: string;
-  statut: "ade" | "aux" | "etudiant";
   is_premium: boolean;
   is_admin: boolean;
   last_login_at: string | null;
