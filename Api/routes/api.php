@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\SacItemController;
 use App\Http\Controllers\Api\GardeController;
 use App\Http\Controllers\Api\Admin\AdminStatsController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
+use App\Http\Controllers\Api\Admin\AdminArticleController;
 use App\Http\Controllers\Api\Admin\AdminServiceController;
 use App\Http\Middleware\IsAdmin;
 
@@ -58,4 +59,9 @@ Route::middleware(['auth:sanctum', IsAdmin::class])->prefix('admin')->group(func
 
     Route::get('services',                       [AdminServiceController::class, 'index']);
     Route::put('services/{service}/maintenance', [AdminServiceController::class, 'setMaintenance']);
+
+    Route::get('articles',              [AdminArticleController::class, 'index']);
+    Route::post('articles',             [AdminArticleController::class, 'store']);
+    Route::put('articles/{article}',    [AdminArticleController::class, 'update']);
+    Route::delete('articles/{article}', [AdminArticleController::class, 'destroy']);
 });

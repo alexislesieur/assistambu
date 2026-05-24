@@ -45,6 +45,27 @@ export interface ServiceStatus {
   message: string | null;
 }
 
+export type ArticleCategorie = 'oxygenotherapie' | 'pansements' | 'immobilisation' | 'medicaments' | 'monitoring' | 'autre';
+
+export const CATEGORIES: { value: ArticleCategorie; label: string }[] = [
+  { value: 'oxygenotherapie', label: 'Oxygénothérapie' },
+  { value: 'pansements',      label: 'Pansements' },
+  { value: 'immobilisation',  label: 'Immobilisation' },
+  { value: 'medicaments',     label: 'Médicaments' },
+  { value: 'monitoring',      label: 'Monitoring' },
+  { value: 'autre',           label: 'Autre' },
+];
+
+export interface Article {
+  id: number;
+  name: string;
+  slug: string;
+  categorie: ArticleCategorie;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   current_page: number;
