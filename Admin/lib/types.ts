@@ -59,7 +59,6 @@ export const CATEGORIES: { value: ArticleCategorie; label: string }[] = [
 export interface Article {
   id: number;
   name: string;
-  slug: string;
   categorie: ArticleCategorie;
   is_active: boolean;
   created_at: string;

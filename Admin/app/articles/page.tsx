@@ -205,7 +205,6 @@ export default function ArticlesPage() {
                 <thead className="bg-[#F0F2F5] border-b border-[#D1D8E0]">
                   <tr>
                     <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Nom</th>
-                    <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Slug</th>
                     <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">Catégorie</th>
                     <th className="text-left text-xs font-semibold text-[#8694A7] uppercase tracking-wide px-4 py-3">État</th>
                     <th className="px-4 py-3"/>
@@ -214,7 +213,7 @@ export default function ArticlesPage() {
                 <tbody className="divide-y divide-[#F0F2F5]">
                   {result.data.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="text-center text-[#8694A7] py-8">Aucun article</td>
+                      <td colSpan={4} className="text-center text-[#8694A7] py-8">Aucun article</td>
                     </tr>
                   )}
                   {result.data.map((a) => {
@@ -222,7 +221,6 @@ export default function ArticlesPage() {
                     return (
                       <tr key={a.id} className="hover:bg-[#F9FAFB]">
                         <td className="px-4 py-3 font-semibold text-[#0A1E3D]">{a.name}</td>
-                        <td className="px-4 py-3 font-mono text-xs text-[#8694A7]">{a.slug}</td>
                         <td className="px-4 py-3 text-[#0A1E3D]">{CATEGORIE_LABELS[a.categorie]}</td>
                         <td className="px-4 py-3">
                           {a.is_active ? (
