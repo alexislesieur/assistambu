@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { useAuth } from "@/hooks/useAuth";
+import type { User } from "@/lib/types";
 import type { Garde } from "@/lib/types";
 
-export function useGardeActive() {
-  const { user } = useAuth();
+export function useGardeActive(user: User | null) {
   const [garde, setGarde] = useState<Garde | null>(null);
   const [loading, setLoading] = useState(true);
 

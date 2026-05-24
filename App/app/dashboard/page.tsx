@@ -35,7 +35,7 @@ const TYPE_LABELS: Record<string, string> = {
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { garde: gardeActive, loading: gardeLoading } = useGardeActive();
+  const { garde: gardeActive } = useGardeActive(user);
   const [sacStats, setSacStats] = useState<SacStats | null>(null);
   const [interventions, setInterventions] = useState<Intervention[]>([]);
 
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {!gardeLoading && !gardeActive && (
+        {!gardeActive && (
           <button
             onClick={() => router.push("/planning")}
             className="w-full bg-white rounded-xl border border-[#D1D8E0] p-4 flex items-center justify-between"

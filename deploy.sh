@@ -67,9 +67,10 @@ deploy_frontend() {
   NEXT_PUBLIC_AUTH_URL="$auth_url" \
   NEXT_PUBLIC_APP_URL="$app_url" \
   NEXT_PUBLIC_ADMIN_URL="$admin_url" \
-  npm run build 2>&1 | tail -1
+  npm run build 2>&1 | tail -20
+  BUILD_EXIT=${PIPESTATUS[0]}
 
-  if [ ! -d "out" ]; then
+  if [ $BUILD_EXIT -ne 0 ]; then
     echo -e "${RED}✗ Build échoué${NC}"
     cd "$original_dir"
     return 1

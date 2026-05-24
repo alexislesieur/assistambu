@@ -1,12 +1,15 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 interface Props {
   title: string;
   showBack?: boolean;
   onBack?: () => void;
+  action?: ReactNode;
 }
 
-export default function MobileHeader({ title, showBack, onBack }: Props) {
+export default function MobileHeader({ title, showBack, onBack, action }: Props) {
   return (
     <div className="bg-[#0A1E3D] border-b-2 border-[#2E86C1] px-4 pt-12 pb-4">
       <div className="flex items-center justify-between">
@@ -37,12 +40,15 @@ export default function MobileHeader({ title, showBack, onBack }: Props) {
             Assist<span className="text-[#5DADE2]">Ambu</span>
           </h1>
         </div>
-        <button className="text-[#5DADE2] p-1">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 01-3.46 0"/>
-          </svg>
-        </button>
+        <div className="flex items-center gap-2">
+          {action}
+          <button className="text-[#5DADE2] p-1">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

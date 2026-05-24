@@ -36,7 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
 export default function NouvelleInterventionPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { garde: gardeActive } = useGardeActive();
+  const { garde: gardeActive } = useGardeActive(user);
 
   const [motif, setMotif] = useState("");
   const [categorie, setCategorie] = useState<Categorie>("autre");

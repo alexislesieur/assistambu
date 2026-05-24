@@ -42,7 +42,7 @@ const MOIS_FR = [
 export default function PlanningPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { garde: gardeActive, refresh: refreshActive } = useGardeActive();
+  const { garde: gardeActive, refresh: refreshActive } = useGardeActive(user);
 
   const now = new Date();
   const [mois, setMois] = useState(now.getMonth() + 1);
@@ -53,6 +53,30 @@ export default function PlanningPage() {
   const [actionId, setActionId] = useState<number | null>(null);
   const [cloturerId, setCloturerId] = useState<number | null>(null);
   const [notesRecap, setNotesRecap] = useState("");
+
+  const [showNouvelle, setShowNouvelle] = useState(false);
+  const [nouvelleForm, setNouvelleForm] = useState({
+    date: now.toISOString().slice(0, 10),
+    heure_debut: "07:00",
+    heure_fin: "19:00",
+    type: "jour" as GardeType,
+    binome: "",
+  });
+  const [creating, setCreating] = useState(false);
+
+  async function handleCreer() {
+    setCreating(true);
+    try {
+      await api.post("/gardes", {
+        ...nouvelleForm,
+        binome: nouvelleForm.binome || null,
+      });
+      setShowNouvelle(false);
+      await load(mois, annee);
+    } finally {
+      setCreating(false);
+    }
+  }
 
   async function load(m: number, a: number) {
     setFetching(true);
@@ -122,7 +146,16 @@ export default function PlanningPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="Planning" />
+      <MobileHeader title="Planning" action={
+        <button
+          onClick={() => setShowNouvelle(true)}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#2E86C1] text-white"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      } />
 
       <div className="px-4 py-5 space-y-4">
 
@@ -283,6 +316,93 @@ export default function PlanningPage() {
                 className="flex-1 py-3 rounded-xl bg-[#C0392B] text-white text-sm font-semibold disabled:opacity-50"
               >
                 {actionId === cloturerId ? "Clôture…" : "Confirmer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showNouvelle && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
+            <h3 className="text-[#0A1E3D] font-bold text-lg">Nouvelle garde</h3>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[#8694A7] text-xs font-semibold uppercase tracking-wide">Date</label>
+                <input
+                  type="date"
+                  value={nouvelleForm.date}
+                  onChange={(e) => setNouvelleForm((f) => ({ ...f, date: e.target.value }))}
+                  className="mt-1 w-full border border-[#D1D8E0] rounded-xl px-3 py-2.5 text-sm text-[#1C1F26] outline-none focus:border-[#2E86C1]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[#8694A7] text-xs font-semibold uppercase tracking-wide">Début</label>
+                  <input
+                    type="time"
+                    value={nouvelleForm.heure_debut}
+                    onChange={(e) => setNouvelleForm((f) => ({ ...f, heure_debut: e.target.value }))}
+                    className="mt-1 w-full border border-[#D1D8E0] rounded-xl px-3 py-2.5 text-sm text-[#1C1F26] outline-none focus:border-[#2E86C1]"
+                  />
+                </div>
+                <div>
+                  <label className="text-[#8694A7] text-xs font-semibold uppercase tracking-wide">Fin</label>
+                  <input
+                    type="time"
+                    value={nouvelleForm.heure_fin}
+                    onChange={(e) => setNouvelleForm((f) => ({ ...f, heure_fin: e.target.value }))}
+                    className="mt-1 w-full border border-[#D1D8E0] rounded-xl px-3 py-2.5 text-sm text-[#1C1F26] outline-none focus:border-[#2E86C1]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[#8694A7] text-xs font-semibold uppercase tracking-wide">Type</label>
+                <div className="mt-1 grid grid-cols-2 gap-2">
+                  {(Object.keys(TYPE_LABELS) as GardeType[]).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setNouvelleForm((f) => ({ ...f, type: t }))}
+                      className={`py-2 rounded-xl text-sm font-semibold border ${
+                        nouvelleForm.type === t
+                          ? `${TYPE_COLORS[t].bg} ${TYPE_COLORS[t].text} ${TYPE_COLORS[t].border}`
+                          : "bg-white text-[#8694A7] border-[#D1D8E0]"
+                      }`}
+                    >
+                      {TYPE_LABELS[t]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[#8694A7] text-xs font-semibold uppercase tracking-wide">Binôme (optionnel)</label>
+                <input
+                  type="text"
+                  value={nouvelleForm.binome}
+                  onChange={(e) => setNouvelleForm((f) => ({ ...f, binome: e.target.value }))}
+                  placeholder="Prénom Nom"
+                  className="mt-1 w-full border border-[#D1D8E0] rounded-xl px-3 py-2.5 text-sm text-[#1C1F26] placeholder-[#8694A7] outline-none focus:border-[#2E86C1]"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowNouvelle(false)}
+                className="flex-1 py-3 rounded-xl border border-[#D1D8E0] text-[#0A1E3D] text-sm font-semibold"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleCreer}
+                disabled={creating}
+                className="flex-1 py-3 rounded-xl bg-[#2E86C1] text-white text-sm font-semibold disabled:opacity-50"
+              >
+                {creating ? "Création…" : "Créer"}
               </button>
             </div>
           </div>
