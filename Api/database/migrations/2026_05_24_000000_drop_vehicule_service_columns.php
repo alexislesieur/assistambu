@@ -9,11 +9,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['vehicule', 'service']);
+            foreach (['vehicule', 'service'] as $col) {
+                if (Schema::hasColumn('users', $col)) {
+                    $table->dropColumn($col);
+                }
+            }
         });
 
         Schema::table('gardes', function (Blueprint $table) {
-            $table->dropColumn(['vehicule', 'service']);
+            foreach (['vehicule', 'service'] as $col) {
+                if (Schema::hasColumn('gardes', $col)) {
+                    $table->dropColumn($col);
+                }
+            }
         });
     }
 
