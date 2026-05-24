@@ -72,6 +72,39 @@ export default function DashboardPage() {
           </p>
         </div>
 
+        {sacStats && (
+          <div className="bg-white rounded-xl border border-[#D1D8E0] p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[#0A1E3D] font-bold text-sm uppercase tracking-wide">
+                Sac médical
+              </h3>
+              <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                sacStats.taux_conformite >= 80
+                  ? "bg-[#E6F2EC] text-[#1D8348]"
+                  : sacStats.taux_conformite >= 50
+                  ? "bg-[#FBF1E0] text-[#D4860B]"
+                  : "bg-[#F9ECEA] text-[#C0392B]"
+              }`}>
+                {sacStats.taux_conformite}% conforme
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-2 bg-[#E6F2EC] rounded-lg">
+                <div className="text-[#1D8348] font-bold text-xl font-mono">{sacStats.conformes}</div>
+                <div className="text-[#1D8348] text-xs font-semibold">OK</div>
+              </div>
+              <div className="text-center p-2 bg-[#FBF1E0] rounded-lg">
+                <div className="text-[#D4860B] font-bold text-xl font-mono">{sacStats.alertes}</div>
+                <div className="text-[#D4860B] text-xs font-semibold">Alertes</div>
+              </div>
+              <div className="text-center p-2 bg-[#F9ECEA] rounded-lg">
+                <div className="text-[#C0392B] font-bold text-xl font-mono">{sacStats.epuises}</div>
+                <div className="text-[#C0392B] text-xs font-semibold">Épuisés</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {!gardeActive && (
           <button
             onClick={() => router.push("/planning")}
@@ -111,39 +144,6 @@ export default function DashboardPage() {
               >
                 + Intervention
               </button>
-            </div>
-          </div>
-        )}
-
-        {sacStats && (
-          <div className="bg-white rounded-xl border border-[#D1D8E0] p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[#0A1E3D] font-bold text-sm uppercase tracking-wide">
-                Sac médical
-              </h3>
-              <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                sacStats.taux_conformite >= 80
-                  ? "bg-[#E6F2EC] text-[#1D8348]"
-                  : sacStats.taux_conformite >= 50
-                  ? "bg-[#FBF1E0] text-[#D4860B]"
-                  : "bg-[#F9ECEA] text-[#C0392B]"
-              }`}>
-                {sacStats.taux_conformite}% conforme
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center p-2 bg-[#E6F2EC] rounded-lg">
-                <div className="text-[#1D8348] font-bold text-xl font-mono">{sacStats.conformes}</div>
-                <div className="text-[#1D8348] text-xs font-semibold">OK</div>
-              </div>
-              <div className="text-center p-2 bg-[#FBF1E0] rounded-lg">
-                <div className="text-[#D4860B] font-bold text-xl font-mono">{sacStats.alertes}</div>
-                <div className="text-[#D4860B] text-xs font-semibold">Alertes</div>
-              </div>
-              <div className="text-center p-2 bg-[#F9ECEA] rounded-lg">
-                <div className="text-[#C0392B] font-bold text-xl font-mono">{sacStats.epuises}</div>
-                <div className="text-[#C0392B] text-xs font-semibold">Épuisés</div>
-              </div>
             </div>
           </div>
         )}
