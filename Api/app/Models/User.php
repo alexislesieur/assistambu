@@ -54,8 +54,6 @@ class User extends Authenticatable
 
     public function isPremium(): bool
     {
-        if ($this->subscribed('default')) return true;
-
         return $this->is_premium && (
             $this->premium_expires_at === null ||
             $this->premium_expires_at->isFuture()

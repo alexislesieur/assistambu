@@ -51,6 +51,7 @@ class InterventionController extends Controller
             'adresse_depart'                 => 'nullable|string|max:200',
             'destination'                    => 'nullable|string|max:200',
             'garde_id'                       => 'nullable|exists:gardes,id',
+            'type_mission'                   => 'nullable|in:commercial,samu',
             'heure_alerte'                   => 'nullable|date',
             'heure_depart'                   => 'nullable|date',
             'heure_arrivee'                  => 'nullable|date',

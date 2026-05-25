@@ -12,6 +12,7 @@ class Intervention extends Model
     protected $fillable = [
         'user_id',
         'garde_id',
+        'type_mission',
         'motif',
         'categorie',
         'patient_sexe',
