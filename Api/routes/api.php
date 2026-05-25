@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\InterventionController;
 use App\Http\Controllers\Api\SacController;
 use App\Http\Controllers\Api\SacItemController;
 use App\Http\Controllers\Api\GardeController;
+use App\Http\Controllers\Api\CongeController;
 use App\Http\Controllers\Api\Admin\AdminStatsController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\Admin\AdminArticleController;
@@ -41,9 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('gardes/active',                 [GardeController::class, 'active']);
     Route::get('gardes/stats/mensuel',          [GardeController::class, 'statsMensuel']);
+    Route::post('gardes/recurrence',            [GardeController::class, 'storeRecurrence']);
     Route::apiResource('gardes', GardeController::class);
     Route::post('gardes/{garde}/demarrer',      [GardeController::class, 'demarrer']);
     Route::post('gardes/{garde}/cloturer',      [GardeController::class, 'cloturer']);
+
+    Route::apiResource('conges', CongeController::class)->except(['show']);
 });
 
 // ── Zone admin ────────────────────────────────────────────────

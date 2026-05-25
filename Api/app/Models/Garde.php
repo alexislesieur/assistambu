@@ -24,6 +24,7 @@ class Garde extends Model
         'pauses',
         'is_active',
         'is_running',
+        'recurrence_id',
     ];
 
     protected $casts = [
@@ -71,5 +72,10 @@ class Garde extends Model
     public function interventions()
     {
         return $this->hasMany(Intervention::class);
+    }
+
+    public function recurrence()
+    {
+        return $this->belongsTo(GardeRecurrence::class, 'recurrence_id');
     }
 }

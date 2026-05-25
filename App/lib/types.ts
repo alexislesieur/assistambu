@@ -76,8 +76,11 @@ export interface Garde {
   notes_recap: string | null;
   pauses: { debut: string; fin: string }[] | null;
   interventions_count: number | null;
+  recurrence_id: number | null;
   created_at: string;
 }
+
+export type RecurrenceFrequence = "quotidien" | "hebdomadaire" | "bihebdomadaire" | "mensuel";
 
 export interface Hopital {
   id: number;

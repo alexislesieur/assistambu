@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Garde;
+use App\Models\GardeRecurrence;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -44,6 +46,77 @@ class GardeController extends Controller
         return response()->json($garde, 201);
     }
 
+    public function storeRecurrence(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'date_debut'      => 'required|date',
+            'date_fin'        => 'nullable|date|after_or_equal:date_debut',
+            'frequence'       => 'required|in:quotidien,hebdomadaire,bihebdomadaire,mensuel',
+            'jours_semaine'   => 'nullable|array',
+            'jours_semaine.*' => 'integer|min:1|max:7',
+            'heure_debut'     => 'required|date_format:H:i',
+            'heure_fin'       => 'required|date_format:H:i',
+            'type'            => 'nullable|in:commercial,garde_dep',
+            'binome'          => 'nullable|string|max:100',
+        ]);
+
+        if (in_array($data['frequence'], ['hebdomadaire', 'bihebdomadaire']) && empty($data['jours_semaine'])) {
+            return response()->json(['message' => 'Les jours de la semaine sont requis pour cette fréquence.'], 422);
+        }
+
+        $recurrence = $request->user()->recurrences()->create([
+            'frequence'     => $data['frequence'],
+            'jours_semaine' => $data['jours_semaine'] ?? null,
+            'date_debut'    => $data['date_debut'],
+            'date_fin'      => $data['date_fin'] ?? null,
+            'heure_debut'   => $data['heure_debut'],
+            'heure_fin'     => $data['heure_fin'],
+            'type'          => $data['type'] ?? 'commercial',
+            'binome'        => $data['binome'] ?? null,
+        ]);
+
+        $this->genererGardes($recurrence, $data['date_debut'], $data['date_fin'] ?? null, $request->user());
+
+        $count = $request->user()->gardes()->where('recurrence_id', $recurrence->id)->count();
+
+        return response()->json(['recurrence' => $recurrence, 'created' => $count], 201);
+    }
+
+    private function genererGardes(GardeRecurrence $rec, string $dateFrom, ?string $dateTo, \App\Models\User $user): void
+    {
+        $current    = Carbon::parse($dateFrom);
+        $end        = $dateTo ? Carbon::parse($dateTo) : Carbon::parse($dateFrom)->addYear();
+        $anchorWeek = Carbon::parse($rec->date_debut)->startOfWeek(Carbon::MONDAY);
+
+        while ($current->lte($end)) {
+            $dow         = (int) $current->isoFormat('E');
+            $weekStart   = $current->copy()->startOfWeek(Carbon::MONDAY);
+            $weekDiff    = (int) $anchorWeek->diffInWeeks($weekStart);
+            $jours       = $rec->jours_semaine ?? [];
+
+            $shouldCreate = match ($rec->frequence) {
+                'quotidien'      => true,
+                'hebdomadaire'   => in_array($dow, $jours),
+                'bihebdomadaire' => in_array($dow, $jours) && $weekDiff % 2 === 0,
+                'mensuel'        => $current->day === Carbon::parse($rec->date_debut)->day,
+                default          => false,
+            };
+
+            if ($shouldCreate) {
+                $user->gardes()->create([
+                    'date'          => $current->toDateString(),
+                    'heure_debut'   => $rec->heure_debut,
+                    'heure_fin'     => $rec->heure_fin,
+                    'type'          => $rec->type,
+                    'binome'        => $rec->binome,
+                    'recurrence_id' => $rec->id,
+                ]);
+            }
+
+            $current->addDay();
+        }
+    }
+
     public function show(Request $request, Garde $garde): JsonResponse
     {
         if ($garde->user_id !== $request->user()->id) {
@@ -60,16 +133,87 @@ class GardeController extends Controller
         }
 
         $data = $request->validate([
+            'scope'       => 'nullable|in:occurrence,following,all',
             'date'        => 'sometimes|date',
             'heure_debut' => 'sometimes|date_format:H:i',
             'heure_fin'   => 'sometimes|date_format:H:i',
-            'type'        => 'sometimes|in:jour,nuit,garde_24h,astreinte',
+            'type'        => 'sometimes|in:commercial,garde_dep',
             'binome'      => 'nullable|string|max:100',
         ]);
 
-        $garde->update($data);
+        $scope = $data['scope'] ?? 'occurrence';
+        unset($data['scope']);
 
-        return response()->json($garde->fresh());
+        // Non-recurring or occurrence: update this garde only
+        if (!$garde->recurrence_id || $scope === 'occurrence') {
+            if ($garde->recurrence_id) {
+                $data['recurrence_id'] = null; // detach from series
+            }
+            $garde->update($data);
+            return response()->json($garde->fresh());
+        }
+
+        $recurrence = GardeRecurrence::find($garde->recurrence_id);
+        if (!$recurrence) {
+            $garde->update($data);
+            return response()->json($garde->fresh());
+        }
+
+        $gardeDate  = $garde->date instanceof Carbon ? $garde->date->toDateString() : (string) $garde->date;
+        $recDebut   = $recurrence->date_debut instanceof Carbon ? $recurrence->date_debut->toDateString() : (string) $recurrence->date_debut;
+        $recFin     = $recurrence->date_fin
+            ? ($recurrence->date_fin instanceof Carbon ? $recurrence->date_fin->toDateString() : (string) $recurrence->date_fin)
+            : null;
+
+        // Only time/type/binome propagate to the series (not date)
+        $fields = [];
+        if (isset($data['heure_debut'])) $fields['heure_debut'] = $data['heure_debut'];
+        if (isset($data['heure_fin']))   $fields['heure_fin']   = $data['heure_fin'];
+        if (isset($data['type']))        $fields['type']        = $data['type'];
+        if (array_key_exists('binome', $data)) $fields['binome'] = $data['binome'];
+
+        if ($scope === 'following') {
+            $dayBefore = Carbon::parse($gardeDate)->subDay()->toDateString();
+
+            // Delete this garde and all future ones in this recurrence
+            $request->user()->gardes()
+                ->where('recurrence_id', $recurrence->id)
+                ->where('is_active', true)
+                ->where('date', '>=', $gardeDate)
+                ->update(['is_active' => false]);
+
+            if ($dayBefore < $recDebut) {
+                // Editing from the very first → update recurrence and regenerate all
+                if (!empty($fields)) $recurrence->update($fields);
+                $this->genererGardes($recurrence->fresh(), $recDebut, $recFin, $request->user());
+            } else {
+                // Truncate old recurrence; create a new one from this date
+                $recurrence->update(['date_fin' => $dayBefore]);
+
+                $newRec = $request->user()->recurrences()->create([
+                    'frequence'     => $recurrence->frequence,
+                    'jours_semaine' => $recurrence->jours_semaine,
+                    'date_debut'    => $gardeDate,
+                    'date_fin'      => $recFin,
+                    'heure_debut'   => $fields['heure_debut'] ?? $recurrence->heure_debut,
+                    'heure_fin'     => $fields['heure_fin']   ?? $recurrence->heure_fin,
+                    'type'          => $fields['type']        ?? $recurrence->type,
+                    'binome'        => array_key_exists('binome', $fields) ? $fields['binome'] : $recurrence->binome,
+                ]);
+
+                $this->genererGardes($newRec, $gardeDate, $recFin, $request->user());
+            }
+        } elseif ($scope === 'all') {
+            if (!empty($fields)) {
+                $recurrence->update($fields);
+                $request->user()->gardes()
+                    ->where('recurrence_id', $recurrence->id)
+                    ->where('is_active', true)
+                    ->update($fields);
+            }
+        }
+
+        return response()->json(['message' => 'Récurrence mise à jour.']);
     }
 
     public function destroy(Request $request, Garde $garde): JsonResponse
@@ -78,9 +222,46 @@ class GardeController extends Controller
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
-        $garde->update(['is_active' => false]);
+        $scope = $request->query('scope', 'occurrence');
 
-        return response()->json(['message' => 'Garde supprimée.']);
+        if (!$garde->recurrence_id || $scope === 'occurrence') {
+            $garde->update(['is_active' => false]);
+            return response()->json(['message' => 'Garde supprimée.']);
+        }
+
+        $recurrence = GardeRecurrence::find($garde->recurrence_id);
+        $gardeDate  = $garde->date instanceof Carbon ? $garde->date->toDateString() : (string) $garde->date;
+
+        if ($scope === 'following') {
+            $request->user()->gardes()
+                ->where('recurrence_id', $garde->recurrence_id)
+                ->where('is_active', true)
+                ->where('date', '>=', $gardeDate)
+                ->update(['is_active' => false]);
+
+            if ($recurrence) {
+                $dayBefore = Carbon::parse($gardeDate)->subDay()->toDateString();
+                $recDebut  = $recurrence->date_debut instanceof Carbon
+                    ? $recurrence->date_debut->toDateString()
+                    : (string) $recurrence->date_debut;
+
+                if ($dayBefore < $recDebut) {
+                    $recurrence->update(['is_active' => false]);
+                } else {
+                    $recurrence->update(['date_fin' => $dayBefore]);
+                }
+            }
+        } elseif ($scope === 'all') {
+            $request->user()->gardes()
+                ->where('recurrence_id', $garde->recurrence_id)
+                ->update(['is_active' => false]);
+
+            if ($recurrence) {
+                $recurrence->update(['is_active' => false]);
+            }
+        }
+
+        return response()->json(['message' => 'Garde(s) supprimée(s).']);
     }
 
     public function statsMensuel(Request $request): JsonResponse
@@ -101,14 +282,14 @@ class GardeController extends Controller
         $totalMinutes = $gardes->sum('duree_minutes');
 
         return response()->json([
-            'mois'             => $request->mois,
-            'annee'            => $request->annee,
-            'nb_gardes'        => $gardes->count(),
-            'total_heures'     => round($totalMinutes / 60, 1),
-            'total_minutes'    => $totalMinutes,
-            'nb_interventions' => $gardes->sum('interventions_count'),
-            'gardes_cloturees' => $gardes->where('is_cloturee', true)->count(),
-            'repartition_types'=> $gardes->groupBy('type')->map->count(),
+            'mois'              => $request->mois,
+            'annee'             => $request->annee,
+            'nb_gardes'         => $gardes->count(),
+            'total_heures'      => round($totalMinutes / 60, 1),
+            'total_minutes'     => $totalMinutes,
+            'nb_interventions'  => $gardes->sum('interventions_count'),
+            'gardes_cloturees'  => $gardes->where('is_cloturee', true)->count(),
+            'repartition_types' => $gardes->groupBy('type')->map->count(),
         ]);
     }
 
@@ -135,9 +316,7 @@ class GardeController extends Controller
         }
 
         $request->user()->gardes()->where('is_running', true)->update(['is_running' => false]);
-
         $garde->update(['is_running' => true]);
-
         ActivityLog::record('garde.demarree', $garde);
 
         return response()->json($garde->fresh());
@@ -196,8 +375,8 @@ class GardeController extends Controller
         ]);
 
         return response()->json([
-            'garde'  => $garde->fresh(),
-            'recap'  => [
+            'garde' => $garde->fresh(),
+            'recap' => [
                 'nb_interventions' => $interventions->count(),
                 'interventions'    => $interventions,
                 'materiel_sorti'   => $materielSorti,

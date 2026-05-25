@@ -76,4 +76,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Garde::class);
     }
+
+    public function conges()
+    {
+        return $this->hasMany(Conge::class);
+    }
+
+    public function recurrences()
+    {
+        return $this->hasMany(GardeRecurrence::class);
+    }
 }
