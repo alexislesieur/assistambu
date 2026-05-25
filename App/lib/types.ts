@@ -38,6 +38,7 @@ export interface Intervention {
   notes: string | null;
   is_locked: boolean;
   garde_id: number | null;
+  type_mission: "commercial" | "samu" | null;
   garde: {
     id: number;
     date: string;
