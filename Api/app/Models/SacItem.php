@@ -17,23 +17,28 @@ class SacItem extends Model
         'qty_current',
         'qty_max',
         'dlc',
+        'dlcs',
         'status',
         'note',
+        'emplacement',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'dlcs'      => 'array',
     ];
 
     public function recalculerStatus(): void
     {
+        $this->dlc = $this->earliestDlc();
+
         $status = 'ok';
 
         if ($this->qty_current === 0) {
             $status = 'danger';
         } elseif ($this->dlc && $this->dlc !== 'N/A') {
-            $dlcDate = Carbon::createFromFormat('m/Y', $this->dlc)->endOfMonth();
+            $dlcDate = Carbon::createFromFormat('d/m/Y', $this->dlc);
             if ($dlcDate->isPast()) {
                 $status = 'danger';
             } elseif ($dlcDate->isBefore(now()->addDays(30))) {
@@ -47,6 +52,21 @@ class SacItem extends Model
 
         $this->status = $status;
         $this->save();
+    }
+
+    public function earliestDlc(): ?string
+    {
+        $lots = $this->dlcs ?? [];
+        if (empty($lots)) {
+            return $this->dlc;
+        }
+
+        $dates = collect($lots)
+            ->filter(fn($l) => !empty($l['dlc']))
+            ->map(fn($l) => Carbon::createFromFormat('d/m/Y', $l['dlc']))
+            ->sort();
+
+        return $dates->isNotEmpty() ? $dates->first()->format('d/m/Y') : $this->dlc;
     }
 
     public function scopeActif($query)

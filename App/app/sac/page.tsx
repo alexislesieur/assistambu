@@ -55,21 +55,41 @@ const STATUS_STYLE: Record<Status, { bg: string; text: string; label: string; ba
   danger:  { bg: "bg-[#F9ECEA]", text: "text-[#C0392B]", label: "Épuisé",  bar: "bg-[#C0392B]" },
 };
 
+function parseDlc(dlc: string): Date {
+  const [dd, mm, yyyy] = dlc.split('/');
+  return new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd));
+}
+
 function formatDlc(dlc: string | null): string | null {
   if (!dlc) return null;
-  const d = new Date(dlc);
-  return d.toLocaleDateString("fr-FR", { month: "2-digit", year: "2-digit" });
+  return dlc;
 }
 
 function isDlcSoon(dlc: string | null): boolean {
   if (!dlc) return false;
-  const diff = new Date(dlc).getTime() - Date.now();
+  const diff = parseDlc(dlc).getTime() - Date.now();
   return diff > 0 && diff < 1000 * 60 * 60 * 24 * 30;
 }
 
 function isDlcPast(dlc: string | null): boolean {
   if (!dlc) return false;
-  return new Date(dlc).getTime() < Date.now();
+  return parseDlc(dlc).getTime() < Date.now();
+}
+
+interface Lot {
+  qty: string;
+  dlc: string;
+}
+
+interface RearmModal {
+  itemId: number | null;
+  lots: Lot[];
+  saving: boolean;
+}
+
+function toApiDlc(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-');
+  return `${d}/${m}/${y}`;
 }
 
 export default function SacPage() {
@@ -78,6 +98,7 @@ export default function SacPage() {
   const [checking, setChecking] = useState(false);
   const [checkedAt, setCheckedAt] = useState<string | null>(null);
   const [openCats, setOpenCats] = useState<Set<string>>(new Set());
+  const [rearm, setRearm] = useState<RearmModal | null>(null);
 
   async function load() {
     const res = await api.get<SacResponse>("/sac");
@@ -118,6 +139,29 @@ export default function SacPage() {
       next.has(cat) ? next.delete(cat) : next.add(cat);
       return next;
     });
+  }
+
+  function openRearm() {
+    setRearm({ itemId: null, lots: [{ qty: "", dlc: "" }], saving: false });
+  }
+
+  async function handleRearm() {
+    if (!rearm || !rearm.itemId) return;
+    const valid = rearm.lots.filter((l) => l.qty && parseInt(l.qty) > 0);
+    if (valid.length === 0) return;
+    setRearm((r) => r && { ...r, saving: true });
+    try {
+      await api.post(`/sac/items/${rearm.itemId}/restock`, {
+        lots: valid.map((l) => ({
+          qty: parseInt(l.qty),
+          dlc: l.dlc ? toApiDlc(l.dlc) : null,
+        })),
+      });
+      setRearm(null);
+      await load();
+    } finally {
+      setRearm((r) => r && { ...r, saving: false });
+    }
   }
 
   if (loading) {
@@ -168,13 +212,21 @@ export default function SacPage() {
               </div>
             </div>
 
-            <button
-              onClick={handleCheck}
-              disabled={checking}
-              className="w-full bg-[#2E86C1] text-white text-sm font-semibold py-2.5 rounded-lg disabled:opacity-50"
-            >
-              {checking ? "Vérification…" : "Marquer comme vérifié"}
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleCheck}
+                disabled={checking}
+                className="bg-[#2E86C1] text-white text-sm font-semibold py-2.5 rounded-lg disabled:opacity-50"
+              >
+                {checking ? "Vérification…" : "Marquer comme vérifié"}
+              </button>
+              <button
+                onClick={openRearm}
+                className="bg-[#E6F2EC] text-[#1D8348] text-sm font-semibold py-2.5 rounded-lg"
+              >
+                Réarmer
+              </button>
+            </div>
 
             {checkedAt && (
               <p className="text-center text-xs text-[#1D8348]">
@@ -273,6 +325,99 @@ export default function SacPage() {
         )}
 
       </div>
+
+      {rearm && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end overflow-y-auto">
+          <div className="w-full bg-white rounded-t-2xl p-6 space-y-4 mt-auto">
+            <h3 className="text-[#0A1E3D] font-bold text-lg">Réarmement</h3>
+
+            <div>
+              <label className="text-[#8694A7] text-xs font-semibold uppercase tracking-wide">Article</label>
+              <select
+                value={rearm.itemId ?? ""}
+                onChange={(e) => setRearm((r) => r && { ...r, itemId: e.target.value ? Number(e.target.value) : null })}
+                className="mt-1 w-full border border-[#D1D8E0] rounded-xl px-3 py-2.5 text-sm text-[#1C1F26] outline-none focus:border-[#2E86C1] bg-white"
+              >
+                <option value="">Sélectionner un article…</option>
+                {data && CATEGORIE_ORDER.flatMap((cat) => {
+                  const group = data.categories[cat];
+                  if (!group) return [];
+                  return [
+                    <option key={`cat-${cat}`} disabled className="text-[#8694A7] font-semibold">
+                      — {CATEGORIE_LABELS[cat]} —
+                    </option>,
+                    ...group.items.map((item) => (
+                      <option key={item.id} value={item.id}>{item.name}</option>
+                    )),
+                  ];
+                })}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              {rearm.lots.map((lot, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    value={lot.qty}
+                    onChange={(e) =>
+                      setRearm((r) => r && {
+                        ...r,
+                        lots: r.lots.map((l, j) => j === i ? { ...l, qty: e.target.value } : l),
+                      })
+                    }
+                    placeholder="Qté"
+                    className="w-20 border border-[#D1D8E0] rounded-xl px-3 py-2 text-sm text-[#1C1F26] outline-none focus:border-[#2E86C1]"
+                  />
+                  <input
+                    type="date"
+                    value={lot.dlc}
+                    onChange={(e) =>
+                      setRearm((r) => r && {
+                        ...r,
+                        lots: r.lots.map((l, j) => j === i ? { ...l, dlc: e.target.value } : l),
+                      })
+                    }
+                    className="flex-1 border border-[#D1D8E0] rounded-xl px-3 py-2 text-sm text-[#1C1F26] outline-none focus:border-[#2E86C1]"
+                  />
+                  {rearm.lots.length > 1 && (
+                    <button
+                      onClick={() => setRearm((r) => r && { ...r, lots: r.lots.filter((_, j) => j !== i) })}
+                      className="text-[#C0392B] text-sm font-bold px-2"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setRearm((r) => r && { ...r, lots: [...r.lots, { qty: "", dlc: "" }] })}
+              className="text-[#2E86C1] text-sm font-semibold"
+            >
+              + Ajouter un lot
+            </button>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setRearm(null)}
+                className="flex-1 py-3 rounded-xl border border-[#D1D8E0] text-[#0A1E3D] text-sm font-semibold"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleRearm}
+                disabled={rearm.saving}
+                className="flex-1 py-3 rounded-xl bg-[#2E86C1] text-white text-sm font-semibold disabled:opacity-50"
+              >
+                {rearm.saving ? "Enregistrement…" : "Confirmer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </div>

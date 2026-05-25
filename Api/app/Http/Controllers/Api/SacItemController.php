@@ -98,23 +98,24 @@ class SacItemController extends Controller
         }
 
         $request->validate([
-            'qty'  => 'required|integer|min:1',
-            'dlc'  => 'nullable|string|max:10',
-            'note' => 'nullable|string|max:200',
+            'lots'          => 'required|array|min:1',
+            'lots.*.qty'    => 'required|integer|min:1',
+            'lots.*.dlc'    => 'nullable|string|max:10',
+            'note'          => 'nullable|string|max:200',
         ]);
 
+        $lots      = $request->lots;
+        $totalQty  = collect($lots)->sum('qty');
         $qtyBefore = $sacItem->qty_current;
-        $newQty    = min($sacItem->qty_max, $qtyBefore + $request->qty);
+        $newQty    = min($sacItem->qty_max, $qtyBefore + $totalQty);
 
-        if ($request->filled('dlc')) {
-            $sacItem->dlc = $request->dlc;
-        }
+        $sacItem->dlcs = $lots;
 
         SacMouvement::create([
             'sac_item_id' => $sacItem->id,
             'user_id'     => $request->user()->id,
             'type'        => 'reappro',
-            'delta'       => $request->qty,
+            'delta'       => $totalQty,
             'qty_before'  => $qtyBefore,
             'qty_after'   => $newQty,
             'note'        => $request->note,
@@ -125,7 +126,7 @@ class SacItemController extends Controller
 
         ActivityLog::record('sac.restock', $sacItem, [
             'item_name' => $sacItem->name,
-            'qty'       => $request->qty,
+            'qty'       => $totalQty,
         ]);
 
         return response()->json($sacItem->fresh());
