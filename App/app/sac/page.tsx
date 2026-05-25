@@ -95,8 +95,6 @@ function toApiDlc(isoDate: string): string {
 export default function SacPage() {
   const { user, loading } = useAuth();
   const [data, setData] = useState<SacResponse | null>(null);
-  const [checking, setChecking] = useState(false);
-  const [checkedAt, setCheckedAt] = useState<string | null>(null);
   const [openCats, setOpenCats] = useState<Set<string>>(new Set());
   const [rearm, setRearm] = useState<RearmModal | null>(null);
 
@@ -121,17 +119,6 @@ export default function SacPage() {
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
-
-  async function handleCheck() {
-    setChecking(true);
-    try {
-      const res = await api.put<{ checked_at: string }>("/sac/check", {});
-      setCheckedAt(res.checked_at);
-      await load();
-    } finally {
-      setChecking(false);
-    }
-  }
 
   function toggleCat(cat: string) {
     setOpenCats((prev) => {
@@ -212,27 +199,18 @@ export default function SacPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={handleCheck}
-                disabled={checking}
-                className="bg-[#2E86C1] text-white text-sm font-semibold py-2.5 rounded-lg disabled:opacity-50"
-              >
-                {checking ? "Vérification…" : "Marquer comme vérifié"}
-              </button>
-              <button
-                onClick={openRearm}
-                className="bg-[#E6F2EC] text-[#1D8348] text-sm font-semibold py-2.5 rounded-lg"
-              >
-                Réarmer
-              </button>
-            </div>
-
-            {checkedAt && (
-              <p className="text-center text-xs text-[#1D8348]">
-                Vérifié à {new Date(checkedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-              </p>
-            )}
+            <button
+              onClick={openRearm}
+              className="w-full bg-[#2E86C1] text-white text-sm font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                <path d="M8 16H3v5"/>
+              </svg>
+              Réarmer le sac
+            </button>
           </div>
         )}
 
