@@ -241,12 +241,6 @@ export default function DashboardPage() {
           {interventions.length === 0 && (
             <div className="bg-white rounded-xl border border-[#D1D8E0] p-6 text-center">
               <p className="text-[#8694A7] text-sm">Aucune intervention enregistrée</p>
-              <button
-                onClick={() => router.push("/interventions/nouvelle")}
-                className="mt-3 inline-block bg-[#2E86C1] text-white text-sm font-semibold px-4 py-2 rounded-lg"
-              >
-                Nouvelle intervention
-              </button>
             </div>
           )}
 

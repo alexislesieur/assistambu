@@ -175,12 +175,6 @@ export default function InterventionsPage() {
 
         <div className="flex items-center justify-between">
           <h2 className="text-[#1C1F26] text-xl font-bold">Journal</h2>
-          <button
-            onClick={() => router.push("/interventions/nouvelle")}
-            className="bg-[#2E86C1] text-white text-sm font-semibold px-3 py-2 rounded-lg"
-          >
-            + Intervention
-          </button>
         </div>
 
         <div className="relative">
@@ -233,14 +227,6 @@ export default function InterventionsPage() {
         {!fetching && interventions.length === 0 && (
           <div className="bg-white rounded-xl border border-[#D1D8E0] p-6 text-center">
             <p className="text-[#8694A7] text-sm">Aucune intervention trouvée</p>
-            {!search && !categorie && (
-              <button
-                onClick={() => router.push("/interventions/nouvelle")}
-                className="mt-3 inline-block bg-[#2E86C1] text-white text-sm font-semibold px-4 py-2 rounded-lg"
-              >
-                Nouvelle intervention
-              </button>
-            )}
           </div>
         )}
 

@@ -836,7 +836,7 @@ export default function PlanningPage() {
 
       {/* ── Scope modal (récurrence) ── */}
       {scopeModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
             <div>
               <h3 className="text-[#0A1E3D] font-bold text-lg">
@@ -878,7 +878,7 @@ export default function PlanningPage() {
 
       {/* ── Clôturer ── */}
       {cloturerId !== null && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
             <h3 className="text-[#0A1E3D] font-bold text-lg">Clôturer la garde</h3>
             <p className="text-[#8694A7] text-sm">Un récapitulatif sera généré. Vous pouvez ajouter des notes.</p>
@@ -895,7 +895,7 @@ export default function PlanningPage() {
 
       {/* ── Nouvelle garde ── */}
       {showNouvelle && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4 max-h-[92vh] overflow-y-auto">
             <h3 className="text-[#0A1E3D] font-bold text-lg">Nouvelle garde</h3>
             <div className="space-y-3">
@@ -996,7 +996,7 @@ export default function PlanningPage() {
 
       {/* ── Edit garde ── */}
       {editGarde !== null && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-[#0A1E3D] font-bold text-lg">Modifier la garde</h3>
             <div className="space-y-3">
@@ -1049,7 +1049,7 @@ export default function PlanningPage() {
 
       {/* ── Confirm delete garde (non-récurrente) ── */}
       {deleteGardeId !== null && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
             <h3 className="text-[#0A1E3D] font-bold text-lg">Supprimer la garde</h3>
             <p className="text-[#8694A7] text-sm">Cette action est irréversible.</p>
@@ -1065,7 +1065,7 @@ export default function PlanningPage() {
 
       {/* ── Congé ── */}
       {showConge && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-[#0A1E3D] font-bold text-lg">{editConge ? "Modifier le congé" : "Nouveau congé / absence"}</h3>
             <div className="space-y-3">
@@ -1107,7 +1107,7 @@ export default function PlanningPage() {
 
       {/* ── Confirm delete congé ── */}
       {deleteCongeId !== null && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
             <h3 className="text-[#0A1E3D] font-bold text-lg">Supprimer le congé</h3>
             <p className="text-[#8694A7] text-sm">Cette période de congé sera supprimée.</p>
@@ -1121,7 +1121,7 @@ export default function PlanningPage() {
 
       {/* ── Réarmement ── */}
       {messageRearmement !== null && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+        <div className="fixed inset-0 bg-black/50 z-60 flex items-end">
           <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
             <h3 className="text-[#0A1E3D] font-bold text-lg">Réarmement du sac</h3>
             <p className="text-[#8694A7] text-sm">Message prêt à envoyer à votre gestionnaire matériel.</p>
