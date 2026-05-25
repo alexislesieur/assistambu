@@ -142,7 +142,7 @@ export default function DashboardPage() {
           <div className="bg-white rounded-xl border border-[#D1D8E0] p-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[#0A1E3D] font-bold text-sm uppercase tracking-wide">
-                Sac médical
+                Sac d'Intervention
               </h3>
               <span className={`text-xs font-semibold px-2 py-1 rounded ${
                 sacStats.taux_conformite >= 80
