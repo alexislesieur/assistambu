@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useGardeActive } from "@/hooks/useGardeActive";
 import { api } from "@/lib/api";
@@ -9,20 +8,27 @@ import MobileHeader from "@/components/MobileHeader";
 import BottomNav from "@/components/BottomNav";
 import type { Garde, PaginatedResponse } from "@/lib/types";
 
-type GardeType = Garde["type"];
+interface MaterielItem {
+  name: string;
+  qty_total: number;
+}
+
+interface CloturerResponse {
+  recap: {
+    materiel_sorti: MaterielItem[];
+  };
+}
+
+type GardeType = "commercial" | "garde_dep";
 
 const TYPE_LABELS: Record<GardeType, string> = {
-  jour:      "Jour",
-  nuit:      "Nuit",
-  garde_24h: "24h",
-  astreinte: "Astreinte",
+  commercial: "Commercial",
+  garde_dep:  "Garde dép.",
 };
 
 const TYPE_COLORS: Record<GardeType, { bg: string; text: string; border: string }> = {
-  jour:      { bg: "bg-[#EBF5FB]", text: "text-[#1A5276]", border: "border-[#2E86C1]" },
-  nuit:      { bg: "bg-[#EAF0F9]", text: "text-[#0A1E3D]", border: "border-[#0A1E3D]" },
-  garde_24h: { bg: "bg-[#F4ECF7]", text: "text-[#6C3483]", border: "border-[#8E44AD]" },
-  astreinte: { bg: "bg-[#FBF1E0]", text: "text-[#9A6B0B]", border: "border-[#D4860B]" },
+  commercial: { bg: "bg-[#EBF5FB]", text: "text-[#1A5276]", border: "border-[#2E86C1]" },
+  garde_dep:  { bg: "bg-[#F4ECF7]", text: "text-[#6C3483]", border: "border-[#8E44AD]" },
 };
 
 interface StatsMensuel {
@@ -41,7 +47,6 @@ const MOIS_FR = [
 
 export default function PlanningPage() {
   const { user, loading } = useAuth();
-  const router = useRouter();
   const { garde: gardeActive, refresh: refreshActive } = useGardeActive(user);
 
   const now = new Date();
@@ -53,13 +58,14 @@ export default function PlanningPage() {
   const [actionId, setActionId] = useState<number | null>(null);
   const [cloturerId, setCloturerId] = useState<number | null>(null);
   const [notesRecap, setNotesRecap] = useState("");
+  const [messageRearmement, setMessageRearmement] = useState<string | null>(null);
 
   const [showNouvelle, setShowNouvelle] = useState(false);
   const [nouvelleForm, setNouvelleForm] = useState({
     date: now.toISOString().slice(0, 10),
     heure_debut: "07:00",
     heure_fin: "19:00",
-    type: "jour" as GardeType,
+    type: "commercial" as GardeType,
     binome: "",
   });
   const [creating, setCreating] = useState(false);
@@ -122,11 +128,14 @@ export default function PlanningPage() {
     if (!cloturerId) return;
     setActionId(cloturerId);
     try {
-      const res = await api.post<{ garde: Garde; recap: unknown }>(`/gardes/${cloturerId}/cloturer`, { notes_recap: notesRecap || null });
-      sessionStorage.setItem(`garde_recap_${cloturerId}`, JSON.stringify(res));
+      const res = await api.post<CloturerResponse>(`/gardes/${cloturerId}/cloturer`, { notes_recap: notesRecap || null });
+      const lignes = res.recap.materiel_sorti.length > 0
+        ? res.recap.materiel_sorti.map((m) => `- ${m.name} × ${m.qty_total}`).join("\n")
+        : "Aucun matériel consommé.";
       setCloturerId(null);
       setNotesRecap("");
-      router.push(`/garde/recap?id=${cloturerId}`);
+      await Promise.all([load(mois, annee), refreshActive()]);
+      setMessageRearmement(`Bonjour,\n\nVoici la liste du matériel utilisé pendant ma dernière garde :\n\n${lignes}\n\nMerci d'avance,\n${user?.first_name ?? ""}`);
     } catch {
       setActionId(null);
     }
@@ -146,16 +155,7 @@ export default function PlanningPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-20">
-      <MobileHeader title="Planning" action={
-        <button
-          onClick={() => setShowNouvelle(true)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#2E86C1] text-white"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-        </button>
-      } />
+      <MobileHeader title="Planning" />
 
       <div className="px-4 py-5 space-y-4">
 
@@ -403,6 +403,36 @@ export default function PlanningPage() {
                 className="flex-1 py-3 rounded-xl bg-[#2E86C1] text-white text-sm font-semibold disabled:opacity-50"
               >
                 {creating ? "Création…" : "Créer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {messageRearmement !== null && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="w-full bg-white rounded-t-2xl p-6 space-y-4">
+            <h3 className="text-[#0A1E3D] font-bold text-lg">Réarmement du sac</h3>
+            <p className="text-[#8694A7] text-sm">Message prêt à envoyer à votre gestionnaire matériel.</p>
+            <textarea
+              readOnly
+              value={messageRearmement}
+              rows={8}
+              onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+              className="w-full border border-[#D1D8E0] rounded-xl px-3 py-2.5 text-sm text-[#1C1F26] bg-[#F8FAFB] resize-none outline-none"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigator.clipboard.writeText(messageRearmement)}
+                className="flex-1 py-3 rounded-xl bg-[#2E86C1] text-white text-sm font-semibold"
+              >
+                Copier
+              </button>
+              <button
+                onClick={() => setMessageRearmement(null)}
+                className="flex-1 py-3 rounded-xl border border-[#D1D8E0] text-[#0A1E3D] text-sm font-semibold"
+              >
+                Fermer
               </button>
             </div>
           </div>
