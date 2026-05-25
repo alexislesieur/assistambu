@@ -12,7 +12,7 @@ export function useGardeActive(user: User | null) {
   const refresh = useCallback(async () => {
     try {
       const res = await api.get<Garde | null>("/gardes/active");
-      setGarde(res ?? null);
+      setGarde(res?.id != null ? res : null);
     } catch {
       setGarde(null);
     } finally {

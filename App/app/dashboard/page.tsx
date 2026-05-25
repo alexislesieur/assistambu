@@ -109,7 +109,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user) return;
     api.get<SacResponse>("/sac").then((res) => setSacStats(res.stats));
-    api.get<InterventionsResponse>("/interventions?per_page=3").then((res) => setInterventions(res.data));
+    api.get<InterventionsResponse>("/interventions").then((res) => setInterventions(res.data.slice(0, 5)));
   }, [user]);
 
   if (loading) {

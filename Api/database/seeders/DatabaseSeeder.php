@@ -79,29 +79,24 @@ class DatabaseSeeder extends Seeder
         }
 
         // ── Sac de test ────────────────────────────────────────
+        SacItem::where('user_id', $user->id)->delete();
+
         $sacItems = [
-            ['name' => 'Masque HC adulte',          'categorie' => 'oxygenotherapie', 'qty_current' => 3,  'qty_max' => 5,  'dlc' => '12/2026'],
-            ['name' => 'Masque HC pédiatrique',     'categorie' => 'oxygenotherapie', 'qty_current' => 2,  'qty_max' => 3,  'dlc' => '08/2026'],
-            ['name' => 'Lunettes O2',               'categorie' => 'oxygenotherapie', 'qty_current' => 5,  'qty_max' => 8,  'dlc' => '03/2027'],
-            ['name' => 'Canule de Guedel',          'categorie' => 'oxygenotherapie', 'qty_current' => 4,  'qty_max' => 4,  'dlc' => null],
-            ['name' => 'Bouteille O2 2L',           'categorie' => 'oxygenotherapie', 'qty_current' => 1,  'qty_max' => 2,  'dlc' => null, 'note' => 'Pression: 140 bar'],
-            ['name' => 'Compresses stériles 10×10', 'categorie' => 'pansements',      'qty_current' => 2,  'qty_max' => 10, 'dlc' => '06/2026'],
-            ['name' => 'Pansement hémostatique',    'categorie' => 'pansements',      'qty_current' => 0,  'qty_max' => 3,  'dlc' => null],
-            ['name' => 'Bandes élastiques',         'categorie' => 'pansements',      'qty_current' => 6,  'qty_max' => 8,  'dlc' => '09/2027'],
-            ['name' => 'Sérum physiologique 250ml', 'categorie' => 'pansements',      'qty_current' => 4,  'qty_max' => 6,  'dlc' => '11/2026'],
-            ['name' => 'Minerve adulte',            'categorie' => 'immobilisation',  'qty_current' => 2,  'qty_max' => 2,  'dlc' => null],
-            ['name' => 'Attelle jambe',             'categorie' => 'immobilisation',  'qty_current' => 1,  'qty_max' => 2,  'dlc' => null],
-            ['name' => 'Paracétamol 500mg',         'categorie' => 'medicaments',     'qty_current' => 8,  'qty_max' => 10, 'dlc' => '11/2026'],
-            ['name' => 'Aspirine 500mg',            'categorie' => 'medicaments',     'qty_current' => 4,  'qty_max' => 6,  'dlc' => '02/2027'],
-            ['name' => 'Gants nitrile M',           'categorie' => 'autre',           'qty_current' => 18, 'qty_max' => 50, 'dlc' => '07/2027'],
-            ['name' => 'Masques FFP2',              'categorie' => 'autre',           'qty_current' => 0,  'qty_max' => 10, 'dlc' => null],
+            ['name' => 'Bande Velpeau 5cm',                'categorie' => 'pansements',      'qty_current' => 1, 'qty_max' => 1, 'dlc' => '31/01/2028', 'emplacement' => null],
+            ['name' => 'Bande Velpeau 10cm',               'categorie' => 'pansements',      'qty_current' => 1, 'qty_max' => 1, 'dlc' => '31/01/2030', 'emplacement' => null],
+            ['name' => 'Compresse de gaze (pochette de 2)','categorie' => 'pansements',      'qty_current' => 1, 'qty_max' => 1, 'dlc' => '01/08/2026', 'emplacement' => null],
+            ['name' => 'Pansement stérile 20x40',          'categorie' => 'pansements',      'qty_current' => 2, 'qty_max' => 2, 'dlc' => '31/01/2028', 'emplacement' => null],
+            ['name' => 'Rouleau de sparadrap',             'categorie' => 'pansements',      'qty_current' => 2, 'qty_max' => 2, 'dlc' => null,         'emplacement' => null],
+            ['name' => 'Paires de gants stériles',         'categorie' => 'autre',           'qty_current' => 2, 'qty_max' => 2, 'dlc' => '31/01/2029', 'emplacement' => null],
+            ['name' => 'Gel hydroalcoolique 100mL',        'categorie' => 'autre',           'qty_current' => 1, 'qty_max' => 1, 'dlc' => '31/01/2027', 'emplacement' => null],
+            ['name' => 'Unidose de Septimyl',              'categorie' => 'medicaments',     'qty_current' => 1, 'qty_max' => 1, 'dlc' => '31/08/2028', 'emplacement' => null],
+            ['name' => 'Canule Oropharyngée S',            'categorie' => 'oxygenotherapie', 'qty_current' => 1, 'qty_max' => 1, 'dlc' => '30/04/2029', 'emplacement' => null],
+            ['name' => 'Canule Oropharyngée M',            'categorie' => 'oxygenotherapie', 'qty_current' => 1, 'qty_max' => 1, 'dlc' => '31/07/2028', 'emplacement' => null],
+            ['name' => 'Canule Oropharyngée L',            'categorie' => 'oxygenotherapie', 'qty_current' => 1, 'qty_max' => 1, 'dlc' => '31/07/2029', 'emplacement' => null],
         ];
 
         foreach ($sacItems as $itemData) {
-            $item = SacItem::firstOrCreate(
-                ['user_id' => $user->id, 'name' => $itemData['name']],
-                array_merge($itemData, ['user_id' => $user->id])
-            );
+            $item = SacItem::create(array_merge($itemData, ['user_id' => $user->id]));
             $item->recalculerStatus();
         }
 

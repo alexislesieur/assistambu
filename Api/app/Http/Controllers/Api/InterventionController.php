@@ -16,6 +16,7 @@ class InterventionController extends Controller
     {
         $query = $request->user()
             ->interventions()
+            ->with('garde:id,date,type,heure_debut,heure_fin')
             ->actif()
             ->latest();
 

@@ -43,10 +43,8 @@ const CATEGORIE_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  jour:      "Garde de jour",
-  nuit:      "Garde de nuit",
-  garde_24h: "Garde 24h",
-  astreinte: "Astreinte",
+  commercial: "Commercial",
+  garde_dep:  "Garde dép.",
 };
 
 export default function GardeRecapPage() {

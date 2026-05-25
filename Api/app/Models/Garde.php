@@ -21,16 +21,18 @@ class Garde extends Model
         'is_cloturee',
         'cloturee_at',
         'notes_recap',
+        'pauses',
         'is_active',
         'is_running',
     ];
 
     protected $casts = [
-        'date'        => 'date',
+        'date'        => 'date:Y-m-d',
         'cloturee_at' => 'datetime',
         'is_cloturee' => 'boolean',
         'is_active'   => 'boolean',
         'is_running'  => 'boolean',
+        'pauses'      => 'array',
     ];
 
     protected static function booted(): void
@@ -40,7 +42,18 @@ class Garde extends Model
                 $debut = Carbon::createFromTimeString($garde->heure_debut);
                 $fin   = Carbon::createFromTimeString($garde->heure_fin);
                 if ($fin->lt($debut)) $fin->addDay();
-                $garde->duree_minutes = $debut->diffInMinutes($fin);
+                $duree = $debut->diffInMinutes($fin);
+
+                foreach ($garde->pauses ?? [] as $pause) {
+                    if (!empty($pause['debut']) && !empty($pause['fin'])) {
+                        $pDebut = Carbon::createFromTimeString($pause['debut']);
+                        $pFin   = Carbon::createFromTimeString($pause['fin']);
+                        if ($pFin->lt($pDebut)) $pFin->addDay();
+                        $duree -= max(0, $pDebut->diffInMinutes($pFin));
+                    }
+                }
+
+                $garde->duree_minutes = max(0, $duree);
             }
         });
     }

@@ -35,7 +35,7 @@ class GardeController extends Controller
             'date'        => 'required|date',
             'heure_debut' => 'required|date_format:H:i',
             'heure_fin'   => 'required|date_format:H:i',
-            'type'        => 'required|in:jour,nuit,garde_24h,astreinte',
+            'type'        => 'nullable|in:commercial,garde_dep',
             'binome'      => 'nullable|string|max:100',
         ]);
 
@@ -154,7 +154,11 @@ class GardeController extends Controller
         }
 
         $request->validate([
-            'notes_recap' => 'nullable|string|max:2000',
+            'notes_recap'      => 'nullable|string|max:2000',
+            'heure_fin_reelle' => 'nullable|date_format:H:i',
+            'pauses'           => 'nullable|array',
+            'pauses.*.debut'   => 'required_with:pauses|date_format:H:i',
+            'pauses.*.fin'     => 'required_with:pauses|date_format:H:i',
         ]);
 
         $interventions = $garde->interventions()
@@ -173,12 +177,19 @@ class GardeController extends Controller
             ])
             ->values();
 
-        $garde->update([
+        $updateData = [
             'is_cloturee' => true,
             'is_running'  => false,
             'cloturee_at' => now(),
             'notes_recap' => $request->notes_recap,
-        ]);
+            'pauses'      => $request->pauses ?? [],
+        ];
+
+        if ($request->filled('heure_fin_reelle')) {
+            $updateData['heure_fin'] = $request->heure_fin_reelle;
+        }
+
+        $garde->update($updateData);
 
         ActivityLog::record('garde.cloturee', $garde, [
             'nb_interventions' => $interventions->count(),

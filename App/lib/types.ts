@@ -38,6 +38,13 @@ export interface Intervention {
   notes: string | null;
   is_locked: boolean;
   garde_id: number | null;
+  garde: {
+    id: number;
+    date: string;
+    type: "commercial" | "garde_dep";
+    heure_debut: string;
+    heure_fin: string;
+  } | null;
   created_at: string;
 }
 
@@ -61,12 +68,13 @@ export interface Garde {
   heure_fin: string;
   duree_minutes: number;
   duree_heures: number;
-  type: "jour" | "nuit" | "garde_24h" | "astreinte";
+  type: "commercial" | "garde_dep";
   binome: string | null;
   is_cloturee: boolean;
   is_running: boolean;
   cloturee_at: string | null;
   notes_recap: string | null;
+  pauses: { debut: string; fin: string }[] | null;
   interventions_count: number | null;
   created_at: string;
 }

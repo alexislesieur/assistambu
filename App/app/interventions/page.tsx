@@ -40,6 +40,63 @@ const BORDER_COLORS: Record<Categorie, string> = {
   autre:       "border-[#8694A7]",
 };
 
+const TYPE_LABELS: Record<string, string> = {
+  commercial: "Commercial",
+  garde_dep:  "Garde dépt.",
+};
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  });
+}
+
+function formatHeure(isoStr: string) {
+  return isoStr.slice(0, 5);
+}
+
+type GroupKey = string; // garde_id as string, or "sans-garde"
+
+interface Group {
+  key: GroupKey;
+  label: string;
+  sublabel: string;
+  interventions: Intervention[];
+}
+
+function buildGroups(interventions: Intervention[]): Group[] {
+  const map = new Map<GroupKey, Group>();
+
+  for (const item of interventions) {
+    const key = item.garde_id ? String(item.garde_id) : "sans-garde";
+
+    if (!map.has(key)) {
+      if (item.garde) {
+        map.set(key, {
+          key,
+          label: `${formatDate(item.garde.date)} · ${TYPE_LABELS[item.garde.type] ?? item.garde.type}`,
+          sublabel: `${formatHeure(item.garde.heure_debut)} – ${formatHeure(item.garde.heure_fin)}`,
+          interventions: [],
+        });
+      } else {
+        map.set(key, {
+          key,
+          label: "Sans garde",
+          sublabel: "",
+          interventions: [],
+        });
+      }
+    }
+
+    map.get(key)!.interventions.push(item);
+  }
+
+  return Array.from(map.values());
+}
+
 export default function InterventionsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -98,6 +155,9 @@ export default function InterventionsPage() {
     setPage(next);
     load(next, search, categorie, true);
   }
+
+  const isFiltered = !!search || !!categorie;
+  const groups = buildGroups(interventions);
 
   if (loading) {
     return (
@@ -185,43 +245,57 @@ export default function InterventionsPage() {
         )}
 
         {interventions.length > 0 && (
-          <div className="space-y-2">
-            {interventions.map((item) => (
-              <div
-                key={item.id}
-                className={`bg-white rounded-xl border border-[#D1D8E0] border-l-4 ${BORDER_COLORS[item.categorie]} p-4`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[#0A1E3D] font-bold text-sm truncate">{item.motif}</span>
-                      {item.is_locked && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8694A7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded ${CATEGORIE_COLORS[item.categorie].bg} ${CATEGORIE_COLORS[item.categorie].text}`}>
-                        {CATEGORIES.find((c) => c.value === item.categorie)?.label ?? item.categorie}
-                      </span>
-                      {item.destination && (
-                        <span className="text-[#8694A7] text-xs truncate">{item.destination}</span>
-                      )}
-                    </div>
-                    {item.gestes.length > 0 && (
-                      <div className="text-[#8694A7] text-xs mt-1 truncate">
-                        {item.gestes.slice(0, 3).join(" · ")}{item.gestes.length > 3 ? " …" : ""}
-                      </div>
+          <div className="space-y-5">
+            {groups.map((group) => (
+              <div key={group.key}>
+                {!isFiltered && (
+                  <div className="flex items-baseline justify-between mb-2">
+                    <span className="text-[#1C1F26] text-sm font-bold">{group.label}</span>
+                    {group.sublabel && (
+                      <span className="text-[#8694A7] text-xs">{group.sublabel}</span>
                     )}
                   </div>
-                  <div className="text-[#8694A7] text-xs font-mono shrink-0">
-                    {new Date(item.created_at).toLocaleDateString("fr-FR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                    })}
-                  </div>
+                )}
+                <div className="space-y-2">
+                  {group.interventions.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`bg-white rounded-xl border border-[#D1D8E0] border-l-4 ${BORDER_COLORS[item.categorie]} p-4`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[#0A1E3D] font-bold text-sm truncate">{item.motif}</span>
+                            {item.is_locked && (
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8694A7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+                              </svg>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded ${CATEGORIE_COLORS[item.categorie].bg} ${CATEGORIE_COLORS[item.categorie].text}`}>
+                              {CATEGORIES.find((c) => c.value === item.categorie)?.label ?? item.categorie}
+                            </span>
+                            {item.destination && (
+                              <span className="text-[#8694A7] text-xs truncate">{item.destination}</span>
+                            )}
+                          </div>
+                          {item.gestes?.length > 0 && (
+                            <div className="text-[#8694A7] text-xs mt-1 truncate">
+                              {item.gestes.slice(0, 3).join(" · ")}{item.gestes.length > 3 ? " …" : ""}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-[#8694A7] text-xs font-mono shrink-0">
+                          {new Date(item.created_at).toLocaleDateString("fr-FR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "2-digit",
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
